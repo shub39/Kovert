@@ -4,6 +4,7 @@ android-compileSdk = "36"
 android-minSdk = "27"
 compose-multiplatform = "1.9.3"
 kotlin = "2.3.0"
+kotlinxDatetime = "0.7.1-0.6.x-compat"
 room = "2.8.4"
 sqlite = "2.6.2"
 ksp = "2.3.3"
@@ -40,6 +41,7 @@ jetbrains-compose-navigation = { group = "org.jetbrains.androidx.navigation", na
 # others
 koog = { module = "ai.koog:koog-agents", version.ref = "koog" }
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "coroutines" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 
 [plugins]
 hotreload = { id = "org.jetbrains.compose.hot-reload", version.ref = "hotreload" }

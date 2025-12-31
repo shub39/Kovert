@@ -19,6 +19,8 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(project(":core"))
+
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
 

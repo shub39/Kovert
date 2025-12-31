@@ -1,6 +1,5 @@
-@file:OptIn(ExperimentalWasmDsl::class)
-
-import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import java.util.Properties
+import com.codingfeline.buildkonfig.compiler.FieldSpec
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -8,6 +7,7 @@ plugins {
     alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.buildkonfig)
 }
 
 kotlin {
@@ -30,10 +30,10 @@ kotlin {
         }
         androidResources.enable = true
     }
-    wasmJs {
-        browser()
-        binaries.executable()
-    }
+//    wasmJs {
+//        browser()
+//        binaries.executable()
+//    }
 
     sourceSets {
         commonMain.dependencies {
@@ -47,6 +47,7 @@ kotlin {
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.jetbrains.compose.navigation)
             implementation(libs.koog)
+            implementation(libs.kotlinx.datetime)
         }
         androidMain.dependencies {
             implementation(compose.preview)
@@ -57,5 +58,26 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
         }
+    }
+}
+
+buildkonfig {
+    packageName = "shub39.kovert"
+
+    val properties = Properties().apply {
+        load(project.rootProject.file("local.properties").reader())
+    }
+    val apiKey: String = properties.getProperty("apiKey")
+
+    require(apiKey.isNotEmpty()) {
+        "Register your api key from developer and place it in local.properties as `apiKey`"
+    }
+
+    defaultConfigs {
+        buildConfigField(
+            FieldSpec.Type.STRING,
+            "GEMINI_API_KEY",
+            apiKey
+        )
     }
 }
