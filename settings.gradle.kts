@@ -20,4 +20,7 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Kovert"
-include(":app")
+
+include(":androidApp")
+include(":desktopApp")
+include(":core")

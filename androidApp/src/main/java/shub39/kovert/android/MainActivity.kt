@@ -1,4 +1,4 @@
-package shub39.kovert.app
+package shub39.kovert.android
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

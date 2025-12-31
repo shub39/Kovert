@@ -6,7 +6,7 @@ plugins {
 }
 
 val appName = "Kovert"
-val appPackageName = "shub39.kovert.app"
+val appPackageName = "shub39.kovert.android"
 val appVersionCode = 1
 val appVersionName = "1.0.0"
 

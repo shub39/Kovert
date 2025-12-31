@@ -14,6 +14,8 @@ coroutines = "1.10.2"
 hotreload = "1.0.0"
 koin = "4.1.1"
 navigation = "2.9.1"
+koog = "0.6.0"
+buildkonfig = "0.17.1"
 
 [libraries]
 # android
@@ -36,6 +38,7 @@ koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", ver
 jetbrains-compose-navigation = { group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version.ref= "navigation"}
 
 # others
+koog = { module = "ai.koog:koog-agents", version.ref = "koog" }
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "coroutines" }
 
 [plugins]
@@ -48,4 +51,4 @@ kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref 
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 androidx-room = { id = "androidx.room", version.ref = "room" }
-
+buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
