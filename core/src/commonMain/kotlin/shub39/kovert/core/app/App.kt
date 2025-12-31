@@ -1,21 +1,28 @@
 package shub39.kovert.core.app
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import shub39.kovert.core.data.Koog
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.ui.NavDisplay
 
 @Composable
 fun App() {
-    var text by remember { mutableStateOf("Loading...") }
+    val backStack = rememberNavBackStack(Routes.config, Routes.MainMenu)
 
-    LaunchedEffect(Unit) {
-        text = Koog.test()
-    }
+    NavDisplay(
+        backStack = backStack,
+        onBack = {
+            if (backStack.size > 1) {
+                backStack.removeLastOrNull()
+            }
+        },
+        entryProvider = entryProvider {
+            entry<Routes.MainMenu> {
 
-    Text(text)
+            }
+            entry<Routes.ChatScreen> {
+
+            }
+        }
+    )
 }

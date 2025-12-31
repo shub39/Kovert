@@ -48,6 +48,8 @@ kotlin {
             implementation(libs.jetbrains.compose.navigation)
             implementation(libs.koog)
             implementation(libs.kotlinx.datetime)
+            implementation(libs.hypnoticcanvas)
+            implementation(libs.materialkolor)
         }
         androidMain.dependencies {
             implementation(compose.preview)
