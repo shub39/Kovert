@@ -69,16 +69,16 @@ buildkonfig {
     val properties = Properties().apply {
         load(project.rootProject.file("local.properties").reader())
     }
-    val apiKey: String = properties.getProperty("apiKey")
+    val apiKey: String = properties.getProperty("apiUrl")
 
     require(apiKey.isNotEmpty()) {
-        "Register your api key from developer and place it in local.properties as `apiKey`"
+        "Register your api key from developer and place it in local.properties as `apiUrl`"
     }
 
     defaultConfigs {
         buildConfigField(
             FieldSpec.Type.STRING,
-            "GEMINI_API_KEY",
+            "OLLAMA_API_URL",
             apiKey
         )
     }

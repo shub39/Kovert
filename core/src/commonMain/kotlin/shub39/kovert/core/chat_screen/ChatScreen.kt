@@ -2,16 +2,14 @@ package shub39.kovert.core.chat_screen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import shub39.kovert.core.data.AgentsHandler
-import shub39.kovert.core.domain.Mystery
 
 @Composable
 fun ChatScreen(
@@ -20,14 +18,6 @@ fun ChatScreen(
     state: ChatScreenState,
     onAction: (ChatScreenAction) -> Unit
 ) {
-    var mystery by rememberSaveable { mutableStateOf<Mystery?>(null) }
-
-    LaunchedEffect(Unit) {
-        if (mystery == null) {
-            mystery = AgentsHandler().generateNewMystery().getOrNull()
-        }
-    }
-
     Column(modifier = modifier) {
         Text(
             text = "Chat Screen"
@@ -38,7 +28,29 @@ fun ChatScreen(
             Text("Go Back")
         }
         Text(
-            text = mystery.toString()
+            text = state.mystery?.uiContext.toString()
         )
+
+        state.chatMessages.forEach { message ->
+            Text(
+                text = "${message.sender}: ${message.content}"
+            )
+        }
+
+        var newMessage by remember { mutableStateOf("") }
+        OutlinedTextField(
+            value = newMessage,
+            onValueChange = { newMessage = it }
+        )
+
+        Button(
+            onClick = {
+                onAction(ChatScreenAction.SendMessage(newMessage))
+                newMessage = ""
+            },
+            enabled = newMessage.isNotBlank()
+        ) {
+            Text(text = "Send Message")
+        }
     }
 }
