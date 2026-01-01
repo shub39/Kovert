@@ -15,6 +15,7 @@ import shub39.kovert.core.data.ChatAgentHandler
 import shub39.kovert.core.data.MysteryMakerAgentHandler
 import shub39.kovert.core.domain.ChatMessage
 import shub39.kovert.core.domain.Entity
+import shub39.kovert.core.domain.onError
 import shub39.kovert.core.domain.onSuccess
 
 class ChatScreenViewModel(
@@ -34,6 +35,9 @@ class ChatScreenViewModel(
                     }
 
                     _chatAgentHandler = ChatAgentHandler(mystery)
+                }
+                .onError {
+                    println(it)
                 }
         }
         .stateIn(

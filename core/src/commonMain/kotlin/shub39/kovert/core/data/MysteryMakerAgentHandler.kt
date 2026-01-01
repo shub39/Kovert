@@ -22,16 +22,20 @@ class MysteryMakerAgentHandler {
     suspend fun generateNewMystery(): Result<Mystery, Errors.AIErrors> {
         val newMystery = mysteryMakerAIAgent.run("Generate a new mystery")
 
+        println(newMystery)
         return try {
             val mystery = jsonRegex.find(newMystery)
             if (mystery != null) {
                 Result.Success(jsonConfig.decodeFromString(mystery.value))
             } else {
+                println("Can't extract json object")
                 Result.Error(Errors.AIErrors.PARSE_ERROR)
             }
         } catch (e: SerializationException) {
+            println("Can't deserialize json")
             Result.Error(Errors.AIErrors.PARSE_ERROR, e.toString())
         } catch (e: Exception) {
+            println("Unknown error ${e.message}")
             Result.Error(Errors.AIErrors.UNKNOWN_ERROR, e.toString())
         }
     }
@@ -56,7 +60,7 @@ class MysteryMakerAgentHandler {
             6. WIN CONDITION("winCondition"): The specific realization or phrase the player must reach to break the AI.
             7. HINTS("hints"): Some hints for the player to start with to unravel the mystery
 
-            Format the output as a clean serializable JSON object according to the following schema
+            Format the output as a clean serializable JSON object that fits the given schema
             
             @Serializable
             data class Mystery(
@@ -66,7 +70,7 @@ class MysteryMakerAgentHandler {
                 val redFlags: List<String>,
                 val defenseStrategy: String,
                 val winCondition: String
-                val hints: String
+                val hints: List<String>
             )
 
             @Serializable

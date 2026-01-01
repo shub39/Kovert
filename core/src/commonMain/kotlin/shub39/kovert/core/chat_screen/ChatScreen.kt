@@ -51,7 +51,7 @@ fun ChatScreen(
                     text = it.persona.front
                 )
                 Text(
-                    text = it.hints
+                    text = it.hints.joinToString()
                 )
             }
         }

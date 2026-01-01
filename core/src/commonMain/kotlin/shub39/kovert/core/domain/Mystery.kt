@@ -10,7 +10,7 @@ data class Mystery(
     val redFlags: List<String>,
     val defenseStrategy: String,
     val winCondition: String,
-    val hints: String
+    val hints: List<String>
 )
 
 @Serializable
