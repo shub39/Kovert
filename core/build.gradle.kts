@@ -30,14 +30,10 @@ kotlin {
         }
         androidResources.enable = true
     }
-//    wasmJs {
-//        browser()
-//        binaries.executable()
-//    }
 
     sourceSets {
         commonMain.dependencies {
-            implementation(compose.material3)
+            implementation(libs.material3)
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.ui)

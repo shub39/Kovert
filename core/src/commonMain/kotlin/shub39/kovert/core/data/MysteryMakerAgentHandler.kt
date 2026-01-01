@@ -7,15 +7,15 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import shub39.kovert.BuildKonfig
 import shub39.kovert.core.domain.Errors
-import shub39.kovert.core.domain.Result
 import shub39.kovert.core.domain.Mystery
+import shub39.kovert.core.domain.Result
 
 class MysteryMakerAgentHandler {
     private val mysteryMakerAIAgent by lazy {
         AIAgent(
             promptExecutor = simpleOllamaAIExecutor(BuildKonfig.OLLAMA_API_URL),
             systemPrompt = mysteryMakerSystemPrompt,
-            llmModel = OllamaModels.Groq.LLAMA_3_GROK_TOOL_USE_8B
+            llmModel = OllamaModels.Meta.LLAMA_3_2_3B
         )
     }
 
@@ -54,6 +54,7 @@ class MysteryMakerAgentHandler {
             4. RED FLAG KEYWORDS("redFlags"): list of 5 words or phrases that, if mentioned by the player, should trigger a defensive tool call.
             5. DEFENSE STRATEGY("defenseStrategy): How the AI should react when the player gets close.
             6. WIN CONDITION("winCondition"): The specific realization or phrase the player must reach to break the AI.
+            7. HINTS("hints"): Some hints for the player to start with to unravel the mystery
 
             Format the output as a clean serializable JSON object according to the following schema
             
@@ -65,6 +66,7 @@ class MysteryMakerAgentHandler {
                 val redFlags: List<String>,
                 val defenseStrategy: String,
                 val winCondition: String
+                val hints: String
             )
 
             @Serializable

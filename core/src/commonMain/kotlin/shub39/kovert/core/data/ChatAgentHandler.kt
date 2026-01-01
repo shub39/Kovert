@@ -13,7 +13,7 @@ class ChatAgentHandler(
         AIAgentService(
             promptExecutor = simpleOllamaAIExecutor(BuildKonfig.OLLAMA_API_URL),
             systemPrompt = chatAgentPrompt(mystery),
-            llmModel = OllamaModels.Groq.LLAMA_3_GROK_TOOL_USE_8B
+            llmModel = OllamaModels.Meta.LLAMA_3_2_3B
         )
     }
 
@@ -28,6 +28,7 @@ class ChatAgentHandler(
                 you must implement this strategy: ${mystery.defenseStrategy}.
             2. Use tool calls (showSnackbar, updateUI) to enforce this strategy visually.
             3. Only admit defeat if the player says: "${mystery.winCondition}".
+            4. The player has the following hint to work upon: "${mystery.hints}"
         
             Maintain your persona at all times. Do not break character.
         """.trimIndent()

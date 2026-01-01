@@ -9,7 +9,8 @@ data class Mystery(
     val uiContext: String,
     val redFlags: List<String>,
     val defenseStrategy: String,
-    val winCondition: String
+    val winCondition: String,
+    val hints: String
 )
 
 @Serializable

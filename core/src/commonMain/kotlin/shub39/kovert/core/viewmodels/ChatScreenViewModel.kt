@@ -29,11 +29,8 @@ class ChatScreenViewModel(
             agentsHandler
                 .generateNewMystery()
                 .onSuccess { mystery ->
-                    println(mystery)
                     _state.update { chatScreenState ->
-                        chatScreenState.copy(
-                            mystery = mystery
-                        )
+                        chatScreenState.copy(mystery = mystery)
                     }
 
                     _chatAgentHandler = ChatAgentHandler(mystery)
@@ -50,6 +47,7 @@ class ChatScreenViewModel(
             is ChatScreenAction.SendMessage -> {
                 _state.update {
                     it.copy(
+                        isLoadingNewMessage = true,
                         chatMessages = it.chatMessages + ChatMessage(
                             sender = Entity.USER,
                             content = action.message,
@@ -69,7 +67,8 @@ class ChatScreenViewModel(
         _chatAgentHandler?.chatAgent?.createAgentAndRun(prompt)?.let { response ->
             _state.update {
                 it.copy(
-                    chatMessages = it.chatMessages + ChatMessage(Entity.AI_AGENT, response)
+                    chatMessages = it.chatMessages + ChatMessage(Entity.AI_AGENT, response),
+                    isLoadingNewMessage = false
                 )
             }
         }
@@ -84,6 +83,8 @@ class ChatScreenViewModel(
             }
         }
         return """
+            Conversation History, Last User query is the current query :
+            
             $historyText
         """.trimIndent()
     }

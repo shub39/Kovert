@@ -9,5 +9,6 @@ import shub39.kovert.core.domain.Mystery
 @Immutable
 data class ChatScreenState(
     val chatMessages: List<ChatMessage> = listOf(),
-    val mystery: Mystery? = null
+    val mystery: Mystery? = null,
+    val isLoadingNewMessage: Boolean = false
 )
