@@ -15,6 +15,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 import shub39.kovert.core.viewmodels.ChatScreenViewModel
 
@@ -86,7 +88,14 @@ private fun ChatScreenContent(
             item {
                 state.chatMessages.forEach { message ->
                     Text(
-                        text = "${message.sender}: ${message.content}"
+                        text = if (message.isRedacted) {
+                            "[REDACTED]"
+                        } else {
+                            "${message.sender}: ${message.content}"
+                        },
+                        modifier = Modifier.blur(
+                            if (message.isBlurred) 12.dp else 0.dp
+                        )
                     )
                 }
             }

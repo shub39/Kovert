@@ -1,6 +1,6 @@
 package shub39.kovert.core.data.agents
 
-import ai.koog.agents.core.agent.AIAgent
+import ai.koog.agents.core.agent.AIAgentService
 import ai.koog.prompt.executor.llms.all.simpleOllamaAIExecutor
 import ai.koog.prompt.llm.OllamaModels
 import kotlinx.serialization.SerializationException
@@ -12,7 +12,7 @@ import shub39.kovert.core.domain.Result
 
 class MysteryMakerAgentHandler {
     private val mysteryMakerAIAgent by lazy {
-        AIAgent.Companion(
+        AIAgentService.Companion(
             promptExecutor = simpleOllamaAIExecutor(BuildKonfig.OLLAMA_API_URL),
             systemPrompt = mysteryMakerSystemPrompt,
             llmModel = OllamaModels.Meta.LLAMA_3_2_3B
@@ -20,7 +20,7 @@ class MysteryMakerAgentHandler {
     }
 
     suspend fun generateNewMystery(): Result<Mystery, Errors.AIErrors> {
-        val newMystery = mysteryMakerAIAgent.run("Generate a new mystery")
+        val newMystery = mysteryMakerAIAgent.createAgentAndRun("Generate a new mystery")
 
         println(newMystery)
         return try {
@@ -60,7 +60,7 @@ class MysteryMakerAgentHandler {
             6. WIN CONDITION("winCondition"): The specific realization or phrase the player must reach to break the AI.
             7. HINTS("hints"): Some hints for the player to start with to unravel the mystery
 
-            Format the output as a clean serializable JSON object that fits the given schema
+            Format the output as a clean serializable JSON object that fits the given schema. Do not provide and explanation, only the JSON object
             
             @Serializable
             data class Mystery(

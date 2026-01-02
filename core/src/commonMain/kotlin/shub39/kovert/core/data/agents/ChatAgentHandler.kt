@@ -8,6 +8,7 @@ import ai.koog.prompt.llm.OllamaModels
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import shub39.kovert.BuildKonfig
+import shub39.kovert.core.data.agents.tools.ChatTools
 import shub39.kovert.core.data.agents.tools.SnackBarTools
 import shub39.kovert.core.domain.Mystery
 
@@ -21,6 +22,7 @@ class ChatAgentHandler(
             llmModel = OllamaModels.Meta.LLAMA_3_2_3B,
             toolRegistry = ToolRegistry {
                 tools(get<SnackBarTools>())
+                tools(get<ChatTools>())
             }
         )
     }
@@ -34,12 +36,13 @@ class ChatAgentHandler(
             RULES:
             1. If the user mentions any of these keywords: ${mystery.redFlags.joinToString()}, 
                 you must implement this strategy: ${mystery.defenseStrategy}.
-            2. Use tool calls (showSnackbar) to enforce this strategy visually.
+            2. Use tool calls (SnackBarTools, ChatTools) to enforce this strategy visually.
             3. Only admit defeat if the player says: "${mystery.winCondition}".
-            4. The player has the following hint to work upon: "${mystery.hints}"
+            4. The player has the following hints to work upon: "${mystery.hints.joinToString()}"
+            5. If the player starts with "Debug:" use appropriate tool calls as specified 
         
-            Maintain your persona at all times. Do not break character. You must always provide a conversational response 
-            alongside your tool calls to maintain your persona.
+            Maintain your persona at all times. Do not break character. You must always provide a conversational response. Don't
+            include tool calls in responses. 
         """.trimIndent()
     }
 }
