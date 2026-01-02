@@ -6,13 +6,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Card
+import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,7 +24,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kovert.core.generated.resources.Res
 import kovert.core.generated.resources.send
+import kovert.core.generated.resources.type_message
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import shub39.kovert.core.chat_screen.ChatScreenAction
 import shub39.kovert.core.chat_screen.ChatScreenState
 
@@ -47,6 +50,7 @@ fun ChatScreenToolBar(
             OutlinedTextField(
                 value = newMessage,
                 onValueChange = { newMessage = it },
+                placeholder = { Text(stringResource(Res.string.type_message)) },
                 shape = MaterialTheme.shapes.extraLarge,
                 enabled = !state.isLoadingNewMessage,
                 singleLine = true,
@@ -72,7 +76,7 @@ fun ChatScreenToolBar(
                 )
             }
         } else {
-            LoadingIndicator()
+            ContainedLoadingIndicator()
         }
     }
 }

@@ -4,9 +4,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
@@ -33,6 +36,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import com.materialkolor.DynamicMaterialTheme
+import kotlinx.coroutines.delay
 import kovert.core.generated.resources.Res
 import kovert.core.generated.resources.hints
 import org.jetbrains.compose.resources.stringResource
@@ -68,8 +72,11 @@ private fun ChatScreenContent(
 ) {
     val listState = rememberLazyListState()
 
-    LaunchedEffect(state.chatMessages) {
-        listState.animateScrollToItem(listState.layoutInfo.totalItemsCount)
+    LaunchedEffect(state.chatMessages.size) {
+        delay(100)
+        if (state.chatMessages.isNotEmpty()) {
+            listState.animateScrollToItem(listState.layoutInfo.totalItemsCount - 1)
+        }
     }
 
     DynamicMaterialTheme(
@@ -79,7 +86,8 @@ private fun ChatScreenContent(
         val nestedScroll = TopAppBarDefaults.enterAlwaysScrollBehavior()
         Scaffold(
             modifier = modifier
-                .nestedScroll(nestedScroll.nestedScrollConnection),
+                .nestedScroll(nestedScroll.nestedScrollConnection)
+                .imePadding(),
             snackbarHost = { SnackbarHost(state.snackBarHostState) },
             topBar = {
                 ChatScreenTopAppBar(
@@ -149,6 +157,10 @@ private fun ChatScreenContent(
                                     }
                                 }
                             }
+                        }
+
+                        item {
+                            Spacer(modifier = Modifier.height(32.dp))
                         }
                     }
 
