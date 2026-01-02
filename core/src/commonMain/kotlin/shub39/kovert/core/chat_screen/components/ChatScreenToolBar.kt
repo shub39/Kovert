@@ -3,11 +3,13 @@ package shub39.kovert.core.chat_screen.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.BottomAppBar
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -18,7 +20,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import kovert.core.generated.resources.Res
 import kovert.core.generated.resources.send
@@ -28,50 +29,50 @@ import shub39.kovert.core.chat_screen.ChatScreenState
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun ChatScreenBottomBar(
+fun ChatScreenToolBar(
     modifier: Modifier = Modifier,
     state: ChatScreenState,
     onAction: (ChatScreenAction) -> Unit
 ) {
-    BottomAppBar(
-        modifier = modifier
-            .clip(RoundedCornerShape(
-                topStart = 16.dp,
-                topEnd = 16.dp
-            ))
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            var newMessage by remember { mutableStateOf("") }
+    var newMessage by remember { mutableStateOf("") }
 
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Card(
+            shape = MaterialTheme.shapes.extraExtraLarge
+        ) {
             OutlinedTextField(
                 value = newMessage,
                 onValueChange = { newMessage = it },
-                modifier = Modifier.weight(1f),
-                shape = MaterialTheme.shapes.medium,
+                shape = MaterialTheme.shapes.extraLarge,
                 enabled = !state.isLoadingNewMessage,
-                singleLine = true
+                singleLine = true,
+                modifier = Modifier
+                    .widthIn(max = 300.dp)
+                    .padding(12.dp)
             )
+        }
 
-            if (!state.isLoadingNewMessage) {
-                FilledTonalIconButton(
-                    onClick = {
-                        onAction(ChatScreenAction.SendMessage(newMessage))
-                        newMessage = ""
-                    },
-                    enabled = newMessage.isNotBlank() && state.mystery != null
-                ) {
-                    Icon(
-                        painter = painterResource(Res.drawable.send),
-                        contentDescription = null
-                    )
-                }
-            } else {
-                LoadingIndicator()
+        if (!state.isLoadingNewMessage) {
+            FilledTonalIconButton(
+                onClick = {
+                    onAction(ChatScreenAction.SendMessage(newMessage))
+                    newMessage = ""
+                },
+                enabled = newMessage.isNotBlank() && state.mystery != null,
+                modifier = Modifier.size(IconButtonDefaults.mediumContainerSize())
+            ) {
+                Icon(
+                    painter = painterResource(Res.drawable.send),
+                    contentDescription = null,
+                    modifier = Modifier.size(IconButtonDefaults.mediumIconSize)
+                )
             }
+        } else {
+            LoadingIndicator()
         }
     }
 }
