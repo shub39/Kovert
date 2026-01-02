@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -22,6 +23,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -64,6 +66,12 @@ private fun ChatScreenContent(
     state: ChatScreenState,
     onAction: (ChatScreenAction) -> Unit,
 ) {
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(state.chatMessages) {
+        listState.animateScrollToItem(listState.layoutInfo.totalItemsCount)
+    }
+
     DynamicMaterialTheme(
         seedColor = Color(0xFFCEEAD6),
         isDark = true
@@ -90,7 +98,7 @@ private fun ChatScreenContent(
                         .fillMaxSize(),
                     contentPadding = PaddingValues(
                         top = padding.calculateTopPadding() + 16.dp,
-                        bottom = padding.calculateBottomPadding() + 60.dp,
+                        bottom = padding.calculateBottomPadding() + 240.dp,
                         start = padding.calculateLeftPadding(LocalLayoutDirection.current) + 16.dp,
                         end = padding.calculateEndPadding(LocalLayoutDirection.current) + 16.dp
                     ),
