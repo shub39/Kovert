@@ -1,5 +1,6 @@
 package shub39.kovert.core.chat_screen
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import shub39.kovert.core.domain.ChatMessage
@@ -10,5 +11,6 @@ import shub39.kovert.core.domain.Mystery
 data class ChatScreenState(
     val chatMessages: List<ChatMessage> = listOf(),
     val mystery: Mystery? = null,
-    val isLoadingNewMessage: Boolean = false
+    val isLoadingNewMessage: Boolean = false,
+    val snackBarHostState: SnackbarHostState = SnackbarHostState()
 )

@@ -11,20 +11,26 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import shub39.kovert.core.chat_screen.ChatScreenAction
 import shub39.kovert.core.chat_screen.ChatScreenState
-import shub39.kovert.core.data.ChatAgentHandler
-import shub39.kovert.core.data.MysteryMakerAgentHandler
+import shub39.kovert.core.data.agents.ChatAgentHandler
+import shub39.kovert.core.data.agents.MysteryMakerAgentHandler
+import shub39.kovert.core.data.agents.tools.SnackBarTools
 import shub39.kovert.core.domain.ChatMessage
 import shub39.kovert.core.domain.Entity
 import shub39.kovert.core.domain.onError
 import shub39.kovert.core.domain.onSuccess
 
 class ChatScreenViewModel(
-    private val agentsHandler: MysteryMakerAgentHandler
+    private val agentsHandler: MysteryMakerAgentHandler,
+    snackBarTools: SnackBarTools
 ) : ViewModel() {
 
     private var _chatAgentHandler: ChatAgentHandler? = null
 
-    private val _state = MutableStateFlow(ChatScreenState())
+    private val _state = MutableStateFlow(
+        ChatScreenState(
+            snackBarHostState = snackBarTools.snackBarHostState
+        )
+    )
     val state = _state.asStateFlow()
         .onStart {
             agentsHandler

@@ -1,4 +1,4 @@
-package shub39.kovert.core.data
+package shub39.kovert.core.data.agents
 
 import ai.koog.agents.core.agent.AIAgent
 import ai.koog.prompt.executor.llms.all.simpleOllamaAIExecutor
@@ -12,7 +12,7 @@ import shub39.kovert.core.domain.Result
 
 class MysteryMakerAgentHandler {
     private val mysteryMakerAIAgent by lazy {
-        AIAgent(
+        AIAgent.Companion(
             promptExecutor = simpleOllamaAIExecutor(BuildKonfig.OLLAMA_API_URL),
             systemPrompt = mysteryMakerSystemPrompt,
             llmModel = OllamaModels.Meta.LLAMA_3_2_3B
