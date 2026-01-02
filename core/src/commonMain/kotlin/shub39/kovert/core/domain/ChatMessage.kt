@@ -6,6 +6,5 @@ import kotlinx.serialization.Serializable
 data class ChatMessage(
     val sender: Entity,
     val content: String,
-    val isRedacted: Boolean = false,
     val isBlurred: Boolean = false
 )

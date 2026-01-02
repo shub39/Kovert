@@ -16,5 +16,5 @@ data class Mystery(
 @Serializable
 data class Persona(
     val name: String,
-    val front: String
+    val introduction: String
 )

@@ -6,7 +6,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -48,7 +47,11 @@ class ChatScreenViewModel(
                         chatScreenState.copy(mystery = mystery)
                     }
 
-                    _chatAgentHandler = ChatAgentHandler(mystery)
+                    _chatAgentHandler = ChatAgentHandler(
+                        mystery = mystery,
+                        snackBarTools = snackBarTools,
+                        chatTools = chatTools
+                    )
                 }
                 .onError {
                     println(it)
@@ -93,7 +96,7 @@ class ChatScreenViewModel(
         val history = _state.value.chatMessages.takeLast(10)
         val historyText = history.joinToString("\n") { msg ->
             when (msg.sender) {
-                Entity.USER -> "User: ${msg.content}, redacted = ${msg.isRedacted}, blurred = ${msg.isBlurred}"
+                Entity.USER -> "User: ${msg.content}, blurred = ${msg.isBlurred}"
                 Entity.AI_AGENT -> "YOU: ${msg.content}"
             }
         }

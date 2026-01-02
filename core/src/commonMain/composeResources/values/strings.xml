@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
     <string name="kovert">Kovert</string>
+    <string name="generating_mystery">Generating Mystery...</string>
+    <string name="hints">Hints</string>
 </resources>

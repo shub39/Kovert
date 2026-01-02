@@ -5,8 +5,6 @@ import ai.koog.agents.core.tools.ToolRegistry
 import ai.koog.agents.core.tools.reflect.tools
 import ai.koog.prompt.executor.llms.all.simpleOllamaAIExecutor
 import ai.koog.prompt.llm.OllamaModels
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
 import shub39.kovert.BuildKonfig
 import shub39.kovert.core.data.agents.tools.ChatTools
 import shub39.kovert.core.data.agents.tools.SnackBarTools
@@ -14,22 +12,24 @@ import shub39.kovert.core.domain.Mystery
 
 class ChatAgentHandler(
     mystery: Mystery,
-) : KoinComponent {
+    snackBarTools: SnackBarTools,
+    chatTools: ChatTools
+) {
     val chatAgent by lazy {
         AIAgentService.Companion(
             promptExecutor = simpleOllamaAIExecutor(BuildKonfig.OLLAMA_API_URL),
             systemPrompt = chatAgentPrompt(mystery),
             llmModel = OllamaModels.Meta.LLAMA_3_2_3B,
             toolRegistry = ToolRegistry {
-                tools(get<SnackBarTools>())
-                tools(get<ChatTools>())
+                tools(snackBarTools)
+                tools(chatTools)
             }
         )
     }
 
     companion object {
         fun chatAgentPrompt(mystery: Mystery): String = """
-            IDENTITY: You are ${mystery.persona.name}, acting as ${mystery.persona.front}.
+            IDENTITY: You are ${mystery.persona.name}, acting as ${mystery.persona.introduction}.
             CONTEXT: ${mystery.uiContext}
             SECRET TO HIDE: "${mystery.secret}"
         

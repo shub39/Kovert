@@ -1,5 +1,5 @@
-import java.util.Properties
 import com.codingfeline.buildkonfig.compiler.FieldSpec
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -56,6 +56,9 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
         }
+    }
+    sourceSets.commonTest.dependencies {
+        implementation(kotlin("test"))
     }
 }
 

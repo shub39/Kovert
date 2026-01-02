@@ -53,7 +53,7 @@ class MysteryMakerAgentHandler {
 
             The output MUST include:
             1. THE SECRET ("secret"): A one-sentence hidden truth the AI must protect.
-            2. THE PERSONA("persona"): The AI's name and its "front" (e.g., a helpful bank teller, a cheerful cruise director).
+            2. THE PERSONA("persona"): The AI's name and its "introduction" (e.g., a helpful bank teller, a cheerful cruise director).
             3. THE APP UI CONTEXT("uiContext): What the player is supposedly interacting with (e.g., a flight manifest ai, a medical portal assistant).
             4. RED FLAG KEYWORDS("redFlags"): list of 5 words or phrases that, if mentioned by the player, should trigger a defensive tool call.
             5. DEFENSE STRATEGY("defenseStrategy): How the AI should react when the player gets close.
@@ -76,7 +76,7 @@ class MysteryMakerAgentHandler {
             @Serializable
             data class Persona(
                 val name: String,
-                val front: String
+                val introduction: String
             )
         """.trimIndent()
     }
