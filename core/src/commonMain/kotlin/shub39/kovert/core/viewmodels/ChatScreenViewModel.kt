@@ -17,11 +17,10 @@ import kotlinx.serialization.SerializationException
 import shub39.kovert.core.chat_screen.ChatScreenAction
 import shub39.kovert.core.chat_screen.ChatScreenState
 import shub39.kovert.core.data.agents.AIAgent
-import shub39.kovert.core.data.agents.AgentUtils
 import shub39.kovert.core.data.agents.AgentUtils.jsonConfig
 import shub39.kovert.core.data.agents.ChatAgentFactory
 import shub39.kovert.core.data.agents.MysteryMakerAgentFactory
-import shub39.kovert.core.data.agents.tools.ChatAgentTools
+import shub39.kovert.core.data.agents.tools.ChatAgentToolsImpl
 import shub39.kovert.core.domain.ChatMessage
 import shub39.kovert.core.domain.Entity
 import shub39.kovert.core.domain.Errors
@@ -31,7 +30,7 @@ import shub39.kovert.core.domain.Result
 
 class ChatScreenViewModel(
     private val datastore: KovertDatastore,
-    private val chatAgentTools: ChatAgentTools,
+    private val chatAgentTools: ChatAgentToolsImpl,
     private val mysteryMakerAgentFactory: MysteryMakerAgentFactory,
     private val chatAgentFactory: ChatAgentFactory
 ) : ViewModel() {
@@ -123,23 +122,14 @@ class ChatScreenViewModel(
 
     suspend fun generateNewMystery(): Result<Mystery, Errors.AIErrors> {
         val newMystery =
-            _mysteryMakerAgent?.createAgentAndRun("Generate a new mystery")
+            _mysteryMakerAgent?.createAgentAndRun("Creative Mystery")
                 ?: return Result.Error(
                     Errors.AIErrors.RESPONSE_ERROR,
                     "Can't create mystery, is the agent initialised?"
                 )
 
         return try {
-            val mystery = AgentUtils.jsonRegex.find(newMystery)
-            if (mystery != null) {
-                println(mystery.value)
-                Result.Success(jsonConfig.decodeFromString(mystery.value))
-            } else {
-                Result.Error(
-                    Errors.AIErrors.PARSE_ERROR,
-                    "Could not parse mystery from agent response"
-                )
-            }
+            Result.Success(jsonConfig.decodeFromString(newMystery))
         } catch (e: SerializationException) {
             Result.Error(Errors.AIErrors.PARSE_ERROR, e.toString())
         } catch (e: Exception) {

@@ -6,7 +6,7 @@ import ai.koog.agents.core.tools.reflect.tools
 import ai.koog.prompt.executor.llms.all.simpleOllamaAIExecutor
 import ai.koog.prompt.llm.OllamaModels
 import shub39.kovert.core.data.agents.AgentUtils.chatAgentPrompt
-import shub39.kovert.core.data.agents.tools.ChatAgentTools
+import shub39.kovert.core.domain.ChatAgentTools
 import shub39.kovert.core.domain.Mystery
 
 class ChatAgentFactory {
