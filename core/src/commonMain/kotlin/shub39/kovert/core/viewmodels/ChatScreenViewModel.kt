@@ -21,9 +21,7 @@ import shub39.kovert.core.data.agents.AgentUtils
 import shub39.kovert.core.data.agents.AgentUtils.jsonConfig
 import shub39.kovert.core.data.agents.ChatAgentFactory
 import shub39.kovert.core.data.agents.MysteryMakerAgentFactory
-import shub39.kovert.core.data.agents.tools.ChatTools
-import shub39.kovert.core.data.agents.tools.GameFlowTools
-import shub39.kovert.core.data.agents.tools.SnackBarTools
+import shub39.kovert.core.data.agents.tools.ChatAgentTools
 import shub39.kovert.core.domain.ChatMessage
 import shub39.kovert.core.domain.Entity
 import shub39.kovert.core.domain.Errors
@@ -33,9 +31,7 @@ import shub39.kovert.core.domain.Result
 
 class ChatScreenViewModel(
     private val datastore: KovertDatastore,
-    private val snackBarTools: SnackBarTools,
-    private val chatTools: ChatTools,
-    private val gameFlowTools: GameFlowTools,
+    private val chatAgentTools: ChatAgentTools,
     private val mysteryMakerAgentFactory: MysteryMakerAgentFactory,
     private val chatAgentFactory: ChatAgentFactory
 ) : ViewModel() {
@@ -46,7 +42,7 @@ class ChatScreenViewModel(
 
     private val _state: MutableStateFlow<ChatScreenState> = MutableStateFlow(
         ChatScreenState(
-            snackBarHostState = snackBarTools.snackBarHostState,
+            snackBarHostState = chatAgentTools.snackBarHostState,
         )
     )
     val state = _state.asStateFlow()
@@ -54,7 +50,7 @@ class ChatScreenViewModel(
             collectState()
             setupAgentsAndMystery()
 
-            chatTools.chatMessages.update { emptyList() }
+            chatAgentTools.chatMessages.update { emptyList() }
 
             mysteryMakerAgentFactory
 
@@ -71,7 +67,7 @@ class ChatScreenViewModel(
                 _state.update {
                     it.copy(isLoadingNewMessage = true)
                 }
-                chatTools.chatMessages.update {
+                chatAgentTools.chatMessages.update {
                     it + ChatMessage(Entity.USER, action.message)
                 }
 
@@ -88,7 +84,7 @@ class ChatScreenViewModel(
             _state.update {
                 it.copy(isLoadingNewMessage = false)
             }
-            chatTools.chatMessages.update {
+            chatAgentTools.chatMessages.update {
                 it + ChatMessage(Entity.AI_AGENT, response)
             }
         }
@@ -122,9 +118,7 @@ class ChatScreenViewModel(
                 _chatAgent = chatAgentFactory.createChatAgent(
                     ollamaUrl = ollamaUrl,
                     mystery = newMystery.data,
-                    snackBarTools = snackBarTools,
-                    chatTools = chatTools,
-                    gameFlowTools = gameFlowTools
+                    chatAgentTools = chatAgentTools
                 )
                 _state.update { it.copy(mystery = newMystery.data) }
             }
@@ -142,6 +136,7 @@ class ChatScreenViewModel(
         return try {
             val mystery = AgentUtils.jsonRegex.find(newMystery)
             if (mystery != null) {
+                println(mystery.value)
                 Result.Success(jsonConfig.decodeFromString(mystery.value))
             } else {
                 Result.Error(
@@ -160,8 +155,8 @@ class ChatScreenViewModel(
         collectStateJob?.cancel()
         collectStateJob = viewModelScope.launch {
             combine(
-                chatTools.chatMessages,
-                gameFlowTools.isGameEnded
+                chatAgentTools.chatMessages,
+                chatAgentTools.isGameEnded
             ) { chatMessages, isGameEnd ->
                 _state.update {
                     it.copy(

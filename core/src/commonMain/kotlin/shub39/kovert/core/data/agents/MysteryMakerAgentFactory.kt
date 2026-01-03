@@ -10,7 +10,8 @@ class MysteryMakerAgentFactory {
         return AIAgentService.Companion(
             promptExecutor = simpleOllamaAIExecutor(ollamaUrl),
             systemPrompt = mysteryMakerSystemPrompt,
-            llmModel = OllamaModels.Meta.LLAMA_3_2_3B
+            llmModel = OllamaModels.Meta.LLAMA_3_2_3B,
+            temperature = 0.7
         )
     }
 }

@@ -7,9 +7,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import shub39.kovert.core.data.agents.ChatAgentFactory
 import shub39.kovert.core.data.agents.MysteryMakerAgentFactory
-import shub39.kovert.core.data.agents.tools.ChatTools
-import shub39.kovert.core.data.agents.tools.GameFlowTools
-import shub39.kovert.core.data.agents.tools.SnackBarTools
+import shub39.kovert.core.data.agents.tools.ChatAgentTools
 import shub39.kovert.core.data.datastore.DataStoreFactory
 import shub39.kovert.core.data.datastore.KovertDatastoreImpl
 import shub39.kovert.core.domain.KovertDatastore
@@ -23,12 +21,8 @@ val sharedModules = module {
     single { get<DataStoreFactory>().getPreferencesDataStore() }
     singleOf(::KovertDatastoreImpl).bind<KovertDatastore>()
 
-    // tools
-    singleOf(::SnackBarTools)
-    singleOf(::ChatTools)
-    singleOf(::GameFlowTools)
-
     // agents
+    singleOf(::ChatAgentTools)
     singleOf(::MysteryMakerAgentFactory)
     singleOf(::ChatAgentFactory)
 
