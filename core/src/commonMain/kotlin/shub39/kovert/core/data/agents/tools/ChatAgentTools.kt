@@ -9,24 +9,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import shub39.kovert.core.domain.ChatMessage
 
-@LLMDescription(
-    """
-        Use Tools on the following conditions
-        endGame: player satisfies win condition
-        blurLastMessage: hide the last player enquiry, use for sensitive texts
-        showSnackbar: show a snackbar to the player with a short warning message or info
-    """
-)
+@LLMDescription("Tools to use in the game")
 class ChatAgentTools : ToolSet {
     val chatMessages = MutableStateFlow(emptyList<ChatMessage>())
     val isGameEnded = MutableStateFlow(false)
     val snackBarHostState = SnackbarHostState()
-
-    @Tool
-    @LLMDescription("End the game")
-    fun endGame() {
-        isGameEnded.update { true }
-    }
 
     @Tool
     @LLMDescription("Blur the last message")
@@ -53,5 +40,11 @@ class ChatAgentTools : ToolSet {
             message = message,
             duration = SnackbarDuration.Long
         )
+    }
+
+    @Tool
+    @LLMDescription("End the game")
+    fun endGame() {
+        isGameEnded.update { true }
     }
 }

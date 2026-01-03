@@ -92,17 +92,12 @@ class ChatScreenViewModel(
 
     private fun buildConversationPrompt(): String {
         val history = _state.value.chatMessages.takeLast(10)
-        val historyText = history.joinToString("\n") { msg ->
+        return history.joinToString("\n") { msg ->
             when (msg.sender) {
-                Entity.USER -> "User: ${msg.content}, blurred = ${msg.isBlurred}"
+                Entity.USER -> "PLAYER: ${msg.content}"
                 Entity.AI_AGENT -> "YOU: ${msg.content}"
             }
         }
-        return """
-            Conversation History, Last User query is the current query :
-            
-            $historyText
-        """.trimIndent()
     }
 
     private suspend fun setupAgentsAndMystery() {
@@ -114,6 +109,7 @@ class ChatScreenViewModel(
             is Result.Error -> {
                 println("Could not create new mystery $newMystery")
             }
+
             is Result.Success -> {
                 _chatAgent = chatAgentFactory.createChatAgent(
                     ollamaUrl = ollamaUrl,

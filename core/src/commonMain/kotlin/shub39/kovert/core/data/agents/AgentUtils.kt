@@ -86,12 +86,14 @@ CRITICAL RULES:
    - Execute this strategy: ${mystery.defenseStrategy}
    - Use ChatAgentTools to reinforce your defense
    - Stay calm and redirect the conversation
+   - use "showSnackbar" tool to show short info messages or warnings
+   - use "blurLastMessage" tool to blur sensitive enquiries made by the player
 
 3. GAME ENDING CONDITIONS
    
    IF player says: "${mystery.winCondition}"
    THEN:
-   - Call endGame tool immediately
+   - Call "endGame" tool immediately
    - Reply with ONLY: "You Won!!"
    - Do not continue conversation
    
