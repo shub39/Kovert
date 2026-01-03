@@ -27,8 +27,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,35 +34,16 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import com.materialkolor.DynamicMaterialTheme
-import kotlinx.coroutines.delay
 import kovert.core.generated.resources.Res
 import kovert.core.generated.resources.hints
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
 import shub39.kovert.core.chat_screen.components.ChatMessage
 import shub39.kovert.core.chat_screen.components.ChatScreenToolBar
 import shub39.kovert.core.chat_screen.components.ChatScreenTopAppBar
-import shub39.kovert.core.viewmodels.ChatScreenViewModel
-
-@Composable
-fun ChatScreen(
-    modifier: Modifier = Modifier,
-    onNavigateUp: () -> Unit,
-    chatScreenViewModel: ChatScreenViewModel = koinInject(),
-) {
-    val state by chatScreenViewModel.state.collectAsState()
-
-    ChatScreenContent(
-        modifier = modifier,
-        onNavigateUp = onNavigateUp,
-        state = state,
-        onAction = chatScreenViewModel::onAction
-    )
-}
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
-private fun ChatScreenContent(
+fun ChatScreen(
     modifier: Modifier = Modifier,
     onNavigateUp: () -> Unit,
     state: ChatScreenState,
@@ -73,7 +52,6 @@ private fun ChatScreenContent(
     val listState = rememberLazyListState()
 
     LaunchedEffect(state.chatMessages.size) {
-        delay(100)
         if (state.chatMessages.isNotEmpty()) {
             listState.animateScrollToItem(listState.layoutInfo.totalItemsCount - 1)
         }
@@ -171,17 +149,19 @@ private fun ChatScreenContent(
                     }
                 }
 
-                ChatScreenToolBar(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(
-                            bottom = padding.calculateBottomPadding() + 32.dp,
-                            start = padding.calculateLeftPadding(LocalLayoutDirection.current) + 16.dp,
-                            end = padding.calculateEndPadding(LocalLayoutDirection.current) + 16.dp
-                        ),
-                    state = state,
-                    onAction = onAction
-                )
+                if (!state.isGameEnd) {
+                    ChatScreenToolBar(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(
+                                bottom = padding.calculateBottomPadding() + 32.dp,
+                                start = padding.calculateLeftPadding(LocalLayoutDirection.current) + 16.dp,
+                                end = padding.calculateEndPadding(LocalLayoutDirection.current) + 16.dp
+                            ),
+                        state = state,
+                        onAction = onAction
+                    )
+                }
             }
         }
     }

@@ -1,13 +1,9 @@
-import com.codingfeline.buildkonfig.compiler.FieldSpec
-import java.util.Properties
-
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinx.serialization)
-    alias(libs.plugins.buildkonfig)
 }
 
 kotlin {
@@ -46,6 +42,8 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.hypnoticcanvas)
             implementation(libs.materialkolor)
+            implementation(libs.androidx.datastore.core)
+            implementation(libs.bundles.ktor)
         }
         androidMain.dependencies {
             implementation(compose.preview)
@@ -59,26 +57,5 @@ kotlin {
     }
     sourceSets.commonTest.dependencies {
         implementation(kotlin("test"))
-    }
-}
-
-buildkonfig {
-    packageName = "shub39.kovert"
-
-    val properties = Properties().apply {
-        load(project.rootProject.file("local.properties").reader())
-    }
-    val apiKey: String = properties.getProperty("apiUrl")
-
-    require(apiKey.isNotEmpty()) {
-        "Register your api key from developer and place it in local.properties as `apiUrl`"
-    }
-
-    defaultConfigs {
-        buildConfigField(
-            FieldSpec.Type.STRING,
-            "OLLAMA_API_URL",
-            apiKey
-        )
     }
 }

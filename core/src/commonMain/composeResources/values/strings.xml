@@ -4,4 +4,8 @@
     <string name="generating_mystery">Generating Mystery...</string>
     <string name="hints">Hints</string>
     <string name="type_message">Type your message here</string>
+    <string name="kovert_desc">Solve the mystery!!</string>
+    <string name="new_game">New Game</string>
+    <string name="load_game">Load Game</string>
+    <string name="enter_ollama_url">Enter Ollama Url</string>
 </resources>

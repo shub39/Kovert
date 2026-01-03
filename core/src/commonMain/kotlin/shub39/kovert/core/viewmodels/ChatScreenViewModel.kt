@@ -12,23 +12,26 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import shub39.kovert.core.chat_screen.ChatScreenAction
 import shub39.kovert.core.chat_screen.ChatScreenState
-import shub39.kovert.core.data.agents.ChatAgentHandler
-import shub39.kovert.core.data.agents.MysteryMakerAgentHandler
+import shub39.kovert.core.data.agents.AIAgent
+import shub39.kovert.core.data.agents.MysteryMakerAgentFactory
 import shub39.kovert.core.data.agents.tools.ChatTools
+import shub39.kovert.core.data.agents.tools.GameFlowTools
 import shub39.kovert.core.data.agents.tools.SnackBarTools
 import shub39.kovert.core.domain.ChatMessage
 import shub39.kovert.core.domain.Entity
-import shub39.kovert.core.domain.onError
-import shub39.kovert.core.domain.onSuccess
+import shub39.kovert.core.domain.KovertDatastore
 
 class ChatScreenViewModel(
+    private val datastore: KovertDatastore,
     snackBarTools: SnackBarTools,
-    private val agentsHandler: MysteryMakerAgentHandler,
-    private val chatTools: ChatTools
+    private val chatTools: ChatTools,
+    private val gameFlowTools: GameFlowTools,
+    private val mysteryMakerAgentFactory: MysteryMakerAgentFactory
 ) : ViewModel() {
-    private var messageCollectJob: Job? = null
+    private var collectStateJob: Job? = null
 
-    private var _chatAgentHandler: ChatAgentHandler? = null
+    private var _mysteryMakerAgent: AIAgent? = null
+    private var _chatAgent: AIAgent? = null
 
     private val _state: MutableStateFlow<ChatScreenState> = MutableStateFlow(
         ChatScreenState(
@@ -37,25 +40,11 @@ class ChatScreenViewModel(
     )
     val state = _state.asStateFlow()
         .onStart {
-            collectMessages()
+            collectState()
             chatTools.chatMessages.update { emptyList() }
 
-            agentsHandler
-                .generateNewMystery()
-                .onSuccess { mystery ->
-                    _state.update { chatScreenState ->
-                        chatScreenState.copy(mystery = mystery)
-                    }
+            mysteryMakerAgentFactory
 
-                    _chatAgentHandler = ChatAgentHandler(
-                        mystery = mystery,
-                        snackBarTools = snackBarTools,
-                        chatTools = chatTools
-                    )
-                }
-                .onError {
-                    println(it)
-                }
         }
         .stateIn(
             scope = viewModelScope,
@@ -70,7 +59,7 @@ class ChatScreenViewModel(
                     it.copy(isLoadingNewMessage = true)
                 }
                 chatTools.chatMessages.update {
-                     it + ChatMessage(Entity.USER, action.message)
+                    it + ChatMessage(Entity.USER, action.message)
                 }
 
                 viewModelScope.launch {
@@ -81,15 +70,15 @@ class ChatScreenViewModel(
     }
 
     private suspend fun runAgentWithContext() {
-        val prompt = buildConversationPrompt()
-        _chatAgentHandler?.chatAgent?.createAgentAndRun(prompt)?.let { response ->
-            _state.update {
-                it.copy(isLoadingNewMessage = false)
-            }
-            chatTools.chatMessages.update {
-                it + ChatMessage(Entity.AI_AGENT, response)
-            }
-        }
+//        val prompt = buildConversationPrompt()
+//        _chatAgent?.chatAgent?.createAgentAndRun(prompt)?.let { response ->
+//            _state.update {
+//                it.copy(isLoadingNewMessage = false)
+//            }
+//            chatTools.chatMessages.update {
+//                it + ChatMessage(Entity.AI_AGENT, response)
+//            }
+//        }
     }
 
     private fun buildConversationPrompt(): String {
@@ -107,12 +96,18 @@ class ChatScreenViewModel(
         """.trimIndent()
     }
 
-    private fun collectMessages() {
-        messageCollectJob?.cancel()
-        messageCollectJob = viewModelScope.launch {
-            chatTools.chatMessages.collect { chatMessages ->
-                _state.update {
-                    it.copy(chatMessages = chatMessages)
+    private fun collectState() {
+        collectStateJob?.cancel()
+        collectStateJob = viewModelScope.launch {
+            launch {
+                chatTools.chatMessages.collect { chatMessages ->
+                    _state.update { it.copy(chatMessages = chatMessages) }
+                }
+            }
+
+            launch {
+                gameFlowTools.isGameEnded.collect { isGameEnd ->
+                    _state.update { it.copy(isGameEnd = isGameEnd) }
                 }
             }
         }

@@ -1,53 +1,15 @@
 package shub39.kovert.core.data.agents
 
-import ai.koog.agents.core.agent.AIAgentService
-import ai.koog.prompt.executor.llms.all.simpleOllamaAIExecutor
-import ai.koog.prompt.llm.OllamaModels
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
-import shub39.kovert.BuildKonfig
-import shub39.kovert.core.domain.Errors
-import shub39.kovert.core.domain.Mystery
-import shub39.kovert.core.domain.Result
 
-class MysteryMakerAgentHandler {
-    private val mysteryMakerAIAgent by lazy {
-        AIAgentService.Companion(
-            promptExecutor = simpleOllamaAIExecutor(BuildKonfig.OLLAMA_API_URL),
-            systemPrompt = mysteryMakerSystemPrompt,
-            llmModel = OllamaModels.Meta.LLAMA_3_2_3B
-        )
+object AgentUtils {
+    private val jsonConfig = Json {
+        isLenient = true
+        ignoreUnknownKeys = true
     }
+    private val jsonRegex = Regex("""\{.*\}""", RegexOption.DOT_MATCHES_ALL)
 
-    suspend fun generateNewMystery(): Result<Mystery, Errors.AIErrors> {
-        val newMystery = mysteryMakerAIAgent.createAgentAndRun("Generate a new mystery")
-
-        println(newMystery)
-        return try {
-            val mystery = jsonRegex.find(newMystery)
-            if (mystery != null) {
-                Result.Success(jsonConfig.decodeFromString(mystery.value))
-            } else {
-                println("Can't extract json object")
-                Result.Error(Errors.AIErrors.PARSE_ERROR)
-            }
-        } catch (e: SerializationException) {
-            println("Can't deserialize json")
-            Result.Error(Errors.AIErrors.PARSE_ERROR, e.toString())
-        } catch (e: Exception) {
-            println("Unknown error ${e.message}")
-            Result.Error(Errors.AIErrors.UNKNOWN_ERROR, e.toString())
-        }
-    }
-
-    companion object {
-        private val jsonConfig = Json {
-            isLenient = true
-            ignoreUnknownKeys = true
-        }
-        private val jsonRegex = Regex("""\{.*\}""", RegexOption.DOT_MATCHES_ALL)
-
-        val mysteryMakerSystemPrompt = """
+    val mysteryMakerSystemPrompt = """
             Act as a Creative Game Designer for a social engineering thriller called 'Kovert'. 
             Generate a unique, high-stakes mystery scenario.
 
@@ -79,5 +41,4 @@ class MysteryMakerAgentHandler {
                 val introduction: String
             )
         """.trimIndent()
-    }
 }

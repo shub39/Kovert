@@ -12,5 +12,6 @@ data class ChatScreenState(
     val chatMessages: List<ChatMessage> = listOf(),
     val mystery: Mystery? = null,
     val isLoadingNewMessage: Boolean = false,
+    val isGameEnd: Boolean = false,
     val snackBarHostState: SnackbarHostState = SnackbarHostState()
 )
