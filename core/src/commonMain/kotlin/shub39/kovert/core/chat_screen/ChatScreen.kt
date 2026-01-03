@@ -40,6 +40,8 @@ import org.jetbrains.compose.resources.stringResource
 import shub39.kovert.core.chat_screen.components.ChatMessage
 import shub39.kovert.core.chat_screen.components.ChatScreenToolBar
 import shub39.kovert.core.chat_screen.components.ChatScreenTopAppBar
+import shub39.kovert.core.domain.ChatMessage
+import shub39.kovert.core.domain.Entity
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -51,8 +53,8 @@ fun ChatScreen(
 ) {
     val listState = rememberLazyListState()
 
-    LaunchedEffect(state.chatMessages.size) {
-        if (state.chatMessages.isNotEmpty()) {
+    LaunchedEffect(state.chatMessages.size, state.isLoadingNewMessage) {
+        if (state.chatMessages.isNotEmpty() || state.isLoadingNewMessage) {
             listState.animateScrollToItem(listState.layoutInfo.totalItemsCount - 1)
         }
     }
@@ -76,9 +78,11 @@ fun ChatScreen(
             }
         ) { padding ->
             Box(
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
             ) {
                 LazyColumn(
+                    state = listState,
                     modifier = Modifier
                         .widthIn(max = 600.dp)
                         .fillMaxSize(),
@@ -146,6 +150,17 @@ fun ChatScreen(
                         ChatMessage(
                             chatMessage = message
                         )
+                    }
+
+                    if (state.isLoadingNewMessage) {
+                        item {
+                            ChatMessage(
+                                chatMessage = ChatMessage(
+                                    sender = Entity.AI_AGENT,
+                                    content = "..."
+                                )
+                            )
+                        }
                     }
                 }
 

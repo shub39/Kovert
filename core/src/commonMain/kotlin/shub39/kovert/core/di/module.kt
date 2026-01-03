@@ -5,6 +5,7 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import shub39.kovert.core.data.agents.ChatAgentFactory
 import shub39.kovert.core.data.agents.MysteryMakerAgentFactory
 import shub39.kovert.core.data.agents.tools.ChatTools
 import shub39.kovert.core.data.agents.tools.GameFlowTools
@@ -29,6 +30,7 @@ val sharedModules = module {
 
     // agents
     singleOf(::MysteryMakerAgentFactory)
+    singleOf(::ChatAgentFactory)
 
     // viewmodels
     viewModelOf(::ChatScreenViewModel)

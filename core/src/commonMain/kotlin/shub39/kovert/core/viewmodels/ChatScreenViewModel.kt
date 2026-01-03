@@ -6,27 +6,38 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.serialization.SerializationException
 import shub39.kovert.core.chat_screen.ChatScreenAction
 import shub39.kovert.core.chat_screen.ChatScreenState
 import shub39.kovert.core.data.agents.AIAgent
+import shub39.kovert.core.data.agents.AgentUtils
+import shub39.kovert.core.data.agents.AgentUtils.jsonConfig
+import shub39.kovert.core.data.agents.ChatAgentFactory
 import shub39.kovert.core.data.agents.MysteryMakerAgentFactory
 import shub39.kovert.core.data.agents.tools.ChatTools
 import shub39.kovert.core.data.agents.tools.GameFlowTools
 import shub39.kovert.core.data.agents.tools.SnackBarTools
 import shub39.kovert.core.domain.ChatMessage
 import shub39.kovert.core.domain.Entity
+import shub39.kovert.core.domain.Errors
 import shub39.kovert.core.domain.KovertDatastore
+import shub39.kovert.core.domain.Mystery
+import shub39.kovert.core.domain.Result
 
 class ChatScreenViewModel(
     private val datastore: KovertDatastore,
-    snackBarTools: SnackBarTools,
+    private val snackBarTools: SnackBarTools,
     private val chatTools: ChatTools,
     private val gameFlowTools: GameFlowTools,
-    private val mysteryMakerAgentFactory: MysteryMakerAgentFactory
+    private val mysteryMakerAgentFactory: MysteryMakerAgentFactory,
+    private val chatAgentFactory: ChatAgentFactory
 ) : ViewModel() {
     private var collectStateJob: Job? = null
 
@@ -41,6 +52,8 @@ class ChatScreenViewModel(
     val state = _state.asStateFlow()
         .onStart {
             collectState()
+            setupAgentsAndMystery()
+
             chatTools.chatMessages.update { emptyList() }
 
             mysteryMakerAgentFactory
@@ -70,15 +83,15 @@ class ChatScreenViewModel(
     }
 
     private suspend fun runAgentWithContext() {
-//        val prompt = buildConversationPrompt()
-//        _chatAgent?.chatAgent?.createAgentAndRun(prompt)?.let { response ->
-//            _state.update {
-//                it.copy(isLoadingNewMessage = false)
-//            }
-//            chatTools.chatMessages.update {
-//                it + ChatMessage(Entity.AI_AGENT, response)
-//            }
-//        }
+        val prompt = buildConversationPrompt()
+        _chatAgent?.createAgentAndRun(prompt)?.let { response ->
+            _state.update {
+                it.copy(isLoadingNewMessage = false)
+            }
+            chatTools.chatMessages.update {
+                it + ChatMessage(Entity.AI_AGENT, response)
+            }
+        }
     }
 
     private fun buildConversationPrompt(): String {
@@ -96,20 +109,67 @@ class ChatScreenViewModel(
         """.trimIndent()
     }
 
+    private suspend fun setupAgentsAndMystery() {
+        val ollamaUrl = datastore.getOllamaUrl().first()
+
+        _mysteryMakerAgent = mysteryMakerAgentFactory.createAgent(ollamaUrl)
+
+        when (val newMystery = generateNewMystery()) {
+            is Result.Error -> {
+                println("Could not create new mystery $newMystery")
+            }
+            is Result.Success -> {
+                _chatAgent = chatAgentFactory.createChatAgent(
+                    ollamaUrl = ollamaUrl,
+                    mystery = newMystery.data,
+                    snackBarTools = snackBarTools,
+                    chatTools = chatTools,
+                    gameFlowTools = gameFlowTools
+                )
+                _state.update { it.copy(mystery = newMystery.data) }
+            }
+        }
+    }
+
+    suspend fun generateNewMystery(): Result<Mystery, Errors.AIErrors> {
+        val newMystery =
+            _mysteryMakerAgent?.createAgentAndRun("Generate a new mystery")
+                ?: return Result.Error(
+                    Errors.AIErrors.RESPONSE_ERROR,
+                    "Can't create mystery, is the agent initialised?"
+                )
+
+        return try {
+            val mystery = AgentUtils.jsonRegex.find(newMystery)
+            if (mystery != null) {
+                Result.Success(jsonConfig.decodeFromString(mystery.value))
+            } else {
+                Result.Error(
+                    Errors.AIErrors.PARSE_ERROR,
+                    "Could not parse mystery from agent response"
+                )
+            }
+        } catch (e: SerializationException) {
+            Result.Error(Errors.AIErrors.PARSE_ERROR, e.toString())
+        } catch (e: Exception) {
+            Result.Error(Errors.AIErrors.UNKNOWN_ERROR, e.toString())
+        }
+    }
+
     private fun collectState() {
         collectStateJob?.cancel()
         collectStateJob = viewModelScope.launch {
-            launch {
-                chatTools.chatMessages.collect { chatMessages ->
-                    _state.update { it.copy(chatMessages = chatMessages) }
+            combine(
+                chatTools.chatMessages,
+                gameFlowTools.isGameEnded
+            ) { chatMessages, isGameEnd ->
+                _state.update {
+                    it.copy(
+                        chatMessages = chatMessages,
+                        isGameEnd = isGameEnd
+                    )
                 }
-            }
-
-            launch {
-                gameFlowTools.isGameEnded.collect { isGameEnd ->
-                    _state.update { it.copy(isGameEnd = isGameEnd) }
-                }
-            }
+            }.launchIn(this)
         }
     }
 }

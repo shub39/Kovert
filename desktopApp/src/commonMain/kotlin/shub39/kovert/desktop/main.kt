@@ -11,7 +11,7 @@ fun main() {
 
     singleWindowApplication(
         title = "Kovert",
-        state = WindowState(height = 800.dp, width = 300.dp)
+        state = WindowState(height = 1000.dp, width = 500.dp)
     ) {
         App()
     }
