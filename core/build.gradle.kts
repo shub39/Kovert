@@ -41,7 +41,6 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(libs.androidx.lifecycle.viewmodel)
-            implementation(libs.androidx.lifecycle.runtime)
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.jetbrains.compose.navigation)
@@ -51,7 +50,6 @@ kotlin {
             implementation(libs.materialkolor)
             implementation(libs.androidx.datastore.core)
             implementation(libs.androidx.room.runtime)
-            implementation(libs.androidx.room.compiler)
             implementation(libs.androidx.sqlite.bundled)
             implementation(libs.bundles.ktor)
         }
