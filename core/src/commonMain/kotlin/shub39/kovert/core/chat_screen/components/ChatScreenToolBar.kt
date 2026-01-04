@@ -55,7 +55,7 @@ fun ChatScreenToolBar(
                 singleLine = true,
                 modifier = Modifier
                     .widthIn(max = 300.dp)
-                    .padding(12.dp)
+                    .padding(6.dp)
             )
         }
 

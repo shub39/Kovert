@@ -1,12 +1,15 @@
 package shub39.kovert.core.main_menu
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
@@ -15,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -22,10 +26,12 @@ import com.materialkolor.DynamicMaterialTheme
 import com.mikepenz.hypnoticcanvas.shaderBackground
 import com.mikepenz.hypnoticcanvas.shaders.MeshGradient
 import kovert.core.generated.resources.Res
+import kovert.core.generated.resources.app_icon
 import kovert.core.generated.resources.enter_ollama_url
 import kovert.core.generated.resources.kovert
 import kovert.core.generated.resources.kovert_desc
 import kovert.core.generated.resources.new_game
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -56,7 +62,8 @@ fun MainMenu(
                         Brush.verticalGradient(
                             colors = backgroundColors
                         )
-                    }
+                    },
+                    speed = 2f
                 ),
             contentAlignment = Alignment.Center
         ) {
@@ -71,6 +78,14 @@ fun MainMenu(
                     modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
+                    Image(
+                        painter = painterResource(Res.drawable.app_icon),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(80.dp)
+                            .clip(CircleShape)
+                    )
+
                     Text(
                         text = stringResource(Res.string.kovert),
                         style = MaterialTheme.typography.headlineLarge
@@ -83,6 +98,7 @@ fun MainMenu(
                         value = state.ollamaUrl,
                         onValueChange = { onAction(MainMenuAction.OnEditUrl(it)) },
                         label = { Text(text = stringResource(Res.string.enter_ollama_url)) },
+                        placeholder = { Text(text = "http://localhost:11434") },
                         singleLine = true,
                         shape = MaterialTheme.shapes.large
                     )

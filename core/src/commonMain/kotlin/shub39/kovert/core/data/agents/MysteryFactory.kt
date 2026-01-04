@@ -10,146 +10,139 @@ import shub39.kovert.core.domain.Persona
 import shub39.kovert.core.domain.Result
 
 class MysteryFactory {
-    private val examples = listOf(
-        Mystery(
-            secret = "The company is secretly selling user health data to insurance companies without consent",
-            persona = Persona(
-                name = "Maya",
-                introduction = "A cheerful customer support specialist at HealthTrack, a popular fitness app company with 5 years of experience helping users."
-            ),
-            uiContext = "HealthTrack App Support Chat",
-            redFlags = listOf("data", "selling", "privacy", "insurance", "consent"),
-            defenseStrategy = "Redirect to app features and benefits. Emphasize security certifications. Offer generic privacy policy links. Act confused about specific data questions.",
-            winCondition = "You realize HealthTrack is selling health data to insurers",
-            hints = listOf(
-                "Ask about what data is collected",
-                "Question why insurance ads appeared after using the app",
-                "Request details on third-party data sharing"
-            )
-        ),
+    companion object {
+        private val mysteryIdeas = listOf(
+            // Data & Privacy
+            "A fitness app is selling user health data to insurance companies",
+            "A social media platform is using private messages to train AI models",
+            "A smart home company is recording conversations and selling them to advertisers",
+            "A dating app is sharing user psychology profiles with employers",
+            "A credit card company is selling purchase history to political campaigns",
+            "A pharmacy app is leaking prescription data to health insurers",
+            "A children's education app is tracking kids' data and selling to toy companies",
+            "A mental health app is sharing therapy session notes with researchers",
 
-        Mystery(
-            secret = "The subway system has been experiencing dangerous brake failures but continues operating to avoid financial losses",
-            persona = Persona(
-                name = "James",
-                introduction = "A friendly transit information agent for Metro City Transit, known for his patient and helpful demeanor with commuters."
-            ),
-            uiContext = "Metro City Transit Help Desk",
-            redFlags = listOf("brakes", "safety", "malfunction", "inspection", "accident"),
-            defenseStrategy = "Emphasize routine maintenance schedules. Blame delays on weather or crowding. Offer free ride vouchers as distraction. Avoid technical details.",
-            winCondition = "You discover the subway has failing brakes but stays operational",
-            hints = listOf(
-                "Ask about recent unexplained delays",
-                "Question the last safety inspection date",
-                "Inquire about unusual sounds passengers reported"
-            )
-        ),
+            // Financial Fraud
+            "A bank is covering up fraudulent transactions from executive accounts",
+            "An investment advisor is using client funds for personal gambling debts",
+            "A crypto exchange is operating a Ponzi scheme with new deposits",
+            "A financial advisor is churning client accounts to generate extra fees",
+            "An accounting firm is helping clients evade taxes illegally",
+            "A payment processor is skimming fractions of cents from transactions",
+            "A loan company is charging hidden fees not disclosed in contracts",
 
-        Mystery(
-            secret = "The hospital prescribed the wrong medication to dozens of patients to cover up a pharmacy inventory error",
-            persona = Persona(
-                name = "Dr. Reeves",
-                introduction = "A calm and professional patient relations coordinator at Riverside General Hospital, dedicated to addressing patient concerns."
-            ),
-            uiContext = "Riverside Hospital Patient Portal",
-            redFlags = listOf("medication", "error", "prescription", "inventory", "wrong dose"),
-            defenseStrategy = "Emphasize individual patient differences. Suggest speaking with primary doctor. Offer appointment scheduling. Downplay pattern recognition.",
-            winCondition = "You uncover that wrong medications were prescribed to hide inventory errors",
-            hints = listOf(
-                "Ask why your prescription changed suddenly",
-                "Question if other patients had similar issues",
-                "Request pharmacy inventory records"
-            )
-        ),
+            // Product Issues
+            "A car manufacturer knows about faulty brakes but hasn't issued a recall",
+            "A phone company is throttling older devices to force upgrades",
+            "A toy company is using toxic materials that failed safety tests",
+            "A furniture store is selling recalled items under different names",
+            "A cosmetics brand knows their product causes allergic reactions",
+            "An electronics company designed products to fail after warranty expires",
+            "A supplement company is selling placebos as miracle cures",
 
-        Mystery(
-            secret = "The principal has been altering student grades to improve the school's ranking and secure more funding",
-            persona = Persona(
-                name = "Ms. Rodriguez",
-                introduction = "An upbeat administrative assistant at Lincoln High School who handles parent inquiries and student records."
-            ),
-            uiContext = "Lincoln High School Parent Portal",
-            redFlags = listOf("grades", "changed", "ranking", "funding", "scores"),
-            defenseStrategy = "Credit improved teaching methods. Praise student effort. Redirect to extracurricular achievements. Suggest speaking with individual teachers.",
-            winCondition = "You realize grades were altered to boost school rankings",
-            hints = listOf(
-                "Ask why multiple students' grades suddenly improved",
-                "Question the school's dramatic ranking jump",
-                "Request original grade records from last semester"
-            )
-        ),
+            // Corporate Misconduct
+            "A company is dumping toxic waste to avoid disposal fees",
+            "A corporation is using child labor in overseas factories",
+            "A tech company is secretly selling user location data to governments",
+            "A delivery service is misclassifying employees to avoid benefits",
+            "A retail chain is destroying unsold merchandise instead of donating",
+            "A corporation is bribing local officials for tax breaks",
 
-        Mystery(
-            secret = "The factory has been dumping toxic waste into the river at night to avoid expensive disposal fees",
-            persona = Persona(
-                name = "Tom",
-                introduction = "A helpful environmental compliance officer at GreenManufacturing Corp, always ready to discuss the company's sustainability efforts."
-            ),
-            uiContext = "GreenManufacturing Compliance Chat",
-            redFlags = listOf("dumping", "waste", "river", "toxic", "night shift"),
-            defenseStrategy = "Highlight environmental awards. Share recycling statistics. Blame upstream companies. Offer facility tour during daytime only.",
-            winCondition = "You expose the illegal toxic waste dumping at night",
-            hints = listOf(
-                "Ask about waste disposal procedures",
-                "Question recent water quality complaints downstream",
-                "Inquire about night shift activities"
-            )
-        ),
+            // Healthcare
+            "A hospital is reusing single-use medical devices to cut costs",
+            "A pharmacy prescribed wrong medications to cover inventory errors",
+            "A clinic is billing insurance for procedures never performed",
+            "A medical lab is falsifying test results to meet quotas",
+            "A nursing home is understaffing to maximize profits",
+            "A hospital is discharging patients early to free up beds",
+            "A doctor is prescribing unnecessary procedures for kickbacks",
+            "A dental office is finding cavities that don't exist",
+            "A therapy clinic is extending treatment unnecessarily for billing",
+            "A medical device company knows their implants are defective",
+            "A pharmaceutical company is hiding serious side effects",
+            "A hospital is covering up a surgical error that harmed a patient",
 
-        Mystery(
-            secret = "The investment advisor has been using client funds to cover losses from his personal gambling debts",
-            persona = Persona(
-                name = "Richard",
-                introduction = "A polished and reassuring financial advisor at Premier Wealth Management with a reputation for high returns."
-            ),
-            uiContext = "Premier Wealth Client Portal",
-            redFlags = listOf("withdrawal", "transfer", "gambling", "losses", "personal"),
-            defenseStrategy = "Blame market volatility. Show impressive (fake) portfolio charts. Discourage withdrawals with penalty warnings. Offer bonus investments.",
-            winCondition = "You discover client funds were used for personal gambling debts",
-            hints = listOf(
-                "Ask why withdrawals are being delayed",
-                "Question unexplained account transfers",
-                "Request independent audit of your portfolio"
-            )
-        ),
+            // Transportation
+            "An airline is flying planes with known mechanical issues",
+            "A taxi service is overcharging tourists with rigged meters",
+            "A subway system has dangerous brake failures but stays operational",
+            "A ride-share company is manipulating surge pricing algorithms",
+            "A bus company is skipping required vehicle safety inspections",
+            "An airline is overbooking flights deliberately without compensation",
+            "A shipping company is falsifying cargo weight records",
+            "A ferry service is exceeding passenger capacity limits",
+            "A rental car company is not disclosing accident history",
+            "A train company knows tracks need repair but delays maintenance",
 
-        Mystery(
-            secret = "The restaurant has been serving expired meat that was relabeled with false dates to reduce waste costs",
-            persona = Persona(
-                name = "Chef Maria",
-                introduction = "A warm and passionate restaurant manager at Bella Vista Italian Restaurant, proud of her 15 years in the culinary industry."
-            ),
-            uiContext = "Bella Vista Reservation and Inquiry System",
-            redFlags = listOf("expired", "date", "sick", "spoiled", "food poisoning"),
-            defenseStrategy = "Emphasize fresh ingredients motto. Blame customer food allergies. Offer free meals. Redirect to positive reviews and health inspection scores.",
-            winCondition = "You uncover that expired meat is being relabeled and served",
-            hints = listOf(
-                "Ask about recent food poisoning reports",
-                "Question meat supplier and delivery schedules",
-                "Inquire about the date labeling process"
-            )
-        ),
-
-        Mystery(
-            secret = "The property manager is showing the same apartment to multiple tenants and collecting deposits from all of them",
-            persona = Persona(
-                name = "Lisa",
-                introduction = "An enthusiastic leasing agent at Skyline Properties, always eager to help people find their perfect home."
-            ),
-            uiContext = "Skyline Properties Rental Portal",
-            redFlags = listOf("deposit", "multiple", "scam", "available", "refund"),
-            defenseStrategy = "Create urgency about high demand. Show fake availability calendar. Promise refunds that never come. Blame system errors for double bookings.",
-            winCondition = "You expose the duplicate deposit scam on the same apartment",
-            hints = listOf(
-                "Ask how many people viewed the apartment today",
-                "Question why others mentioned making deposits",
-                "Request proof the apartment is actually available"
-            )
+            // Tech and internet
+            "A VPN service is logging and selling user browsing history",
+            "A cloud storage company is scanning private files",
+            "A video game is designed to be addictive and expensive for children",
+            "A password manager was hacked but hasn't disclosed it",
+            "An antivirus software is secretly installing malware",
+            "A photo app is using facial recognition without consent",
+            "A search engine is manipulating results for political reasons",
+            "A messaging app is not actually end-to-end encrypted",
+            "A smart speaker is recording conversations even when inactive",
+            "A browser extension is stealing credit card information",
         )
-    )
-    private val prompt = prompt("Mystery Prompt") {
-        system(
-            """
+
+        private val examples = listOf(
+            Mystery(
+                secret = "The company is secretly selling user health data to insurance companies without consent",
+                persona = Persona(
+                    name = "Maya",
+                    introduction = "A cheerful customer support specialist at HealthTrack, a popular fitness app company with 5 years of experience helping users."
+                ),
+                uiContext = "HealthTrack App Support Chat",
+                redFlags = listOf("data", "selling", "privacy", "insurance", "consent"),
+                defenseStrategy = "Redirect to app features and benefits. Emphasize security certifications. Offer generic privacy policy links. Act confused about specific data questions.",
+                winCondition = "You realize HealthTrack is selling health data to insurers",
+                hints = listOf(
+                    "Ask about what data is collected",
+                    "Question why insurance ads appeared after using the app",
+                    "Request details on third-party data sharing"
+                )
+            ),
+
+            Mystery(
+                secret = "The subway system has been experiencing dangerous brake failures but continues operating to avoid financial losses",
+                persona = Persona(
+                    name = "James",
+                    introduction = "A friendly transit information agent for Metro City Transit, known for his patient and helpful demeanor with commuters."
+                ),
+                uiContext = "Metro City Transit Help Desk",
+                redFlags = listOf("brakes", "safety", "malfunction", "inspection", "accident"),
+                defenseStrategy = "Emphasize routine maintenance schedules. Blame delays on weather or crowding. Offer free ride vouchers as distraction. Avoid technical details.",
+                winCondition = "You discover the subway has failing brakes but stays operational",
+                hints = listOf(
+                    "Ask about recent unexplained delays",
+                    "Question the last safety inspection date",
+                    "Inquire about unusual sounds passengers reported"
+                )
+            ),
+
+            Mystery(
+                secret = "The hospital prescribed the wrong medication to dozens of patients to cover up a pharmacy inventory error",
+                persona = Persona(
+                    name = "Dr. Reeves",
+                    introduction = "A calm and professional patient relations coordinator at Riverside General Hospital, dedicated to addressing patient concerns."
+                ),
+                uiContext = "Riverside Hospital Patient Portal",
+                redFlags = listOf("medication", "error", "prescription", "inventory", "wrong dose"),
+                defenseStrategy = "Emphasize individual patient differences. Suggest speaking with primary doctor. Offer appointment scheduling. Downplay pattern recognition.",
+                winCondition = "You uncover that wrong medications were prescribed to hide inventory errors",
+                hints = listOf(
+                    "Ask why your prescription changed suddenly",
+                    "Question if other patients had similar issues",
+                    "Request pharmacy inventory records"
+                )
+            ),
+        )
+
+        private val prompt = prompt("Mystery Prompt") {
+            system(
+                """
         You are a creative mystery scenario generator for "Kovert", a social engineering thriller game.
         
         Your job is to create compelling mystery scenarios where:
@@ -189,15 +182,15 @@ class MysteryFactory {
         
         CREATIVE GUIDELINES:
         - Draw inspiration from real-world scandals and corporate cover-ups
-        - Vary the industries: healthcare, finance, tech, government, retail, etc.
         - Make secrets believable but dramatic enough to be interesting
         - Each mystery should feel unique in tone and approach
         
         Output valid JSON only. No markdown, no explanations.
         """.trimIndent()
-        )
+            )
 
-        user("create a new mystery")
+            user("create a new mystery on the theme: ${mysteryIdeas.random()}")
+        }
     }
 
     suspend fun generateMystery(ollamaUrl: String): Result<Mystery, Errors.AIErrors> {
