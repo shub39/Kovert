@@ -7,44 +7,60 @@ import shub39.kovert.core.domain.Mystery
 typealias AIAgent = GraphAIAgentService<String, String>
 
 object AgentUtils {
+    val jsonRegex = Regex("""\{.*\}""", RegexOption.DOT_MATCHES_ALL)
+
     val jsonConfig = Json {
         isLenient = true
         ignoreUnknownKeys = true
     }
 
     val mysteryMakerSystemPrompt = """
-You are a mystery scenario generator for the game 'Kovert'.
+You are a JSON generator for the game 'Kovert'. You MUST output valid JSON only.
 
-YOUR TASK: Create a complete mystery scenario as valid JSON.
+CRITICAL: Your response must be ONLY the JSON object. No text before or after. No explanations.
 
-REQUIREMENTS FOR EACH FIELD:
+Create a new creative mystery scenario with these exact fields:
 
-1. "secret": One clear sentence. The hidden truth the AI protects.
-2. "persona":
-   - "name": A realistic name
-   - "introduction": Who they are in 1-2 sentences
-3. "uiContext": What app/interface the player thinks they're using.
-4. "redFlags": Exactly 5 trigger words/phrases that relate to the secret.
-5. "defenseStrategy": Exactly how the AI should respond when redFlags appear. Be specific about behavior.
-6. "winCondition": The exact phrase or realization that ends the game.
-7. "hints": Exactly 3 helpful starting hints for the player.
-
-OUTPUT FORMAT: Return ONLY valid JSON. No explanation. No markdown. Just the JSON object. NO FIELDS SHOULD BE EMPTY
-
-JSON STRUCTURE:
 {
-  "secret": "string",
+  "secret": "One sentence about the hidden truth",
   "persona": {
-    "name": "string",
-    "introduction": "string"
+    "name": "A realistic first name",
+    "introduction": "1-2 sentences describing who they are"
   },
-  "uiContext": "string",
-  "redFlags": ["string1", "string2", "string3", "string4", "string5"],
-  "defenseStrategy": "string",
-  "winCondition": "string",
-  "hints": ["string1", "string2", "string3"]
+  "uiContext": "The app/interface name the player sees",
+  "redFlags": ["word1", "word2", "word3", "word4", "word5"],
+  "defenseStrategy": "Specific behavior when triggers detected",
+  "winCondition": "The exact realization or phrase to win",
+  "hints": ["hint1", "hint2", "hint3"]
 }
-    """.trimIndent()
+
+RULES:
+- Use double quotes for all strings
+- Include commas between all array items
+- Include commas between all object fields
+- No trailing commas
+- No comments in JSON
+- secret: 1 clear sentence about what's being hidden
+- persona.name: Simple name like "Alex" or "Maya"
+- redFlags: Exactly 5 trigger words related to the secret
+- hints: At least 3 hints to help player start
+
+Example valid JSON:
+{
+  "secret": "The bank is covering up fraudulent transactions from executive accounts.",
+  "persona": {
+    "name": "Marcus",
+    "introduction": "A cheerful fraud prevention specialist at MegaBank with 5 years of experience."
+  },
+  "uiContext": "MegaBank Fraud Alert Chatbot",
+  "redFlags": ["executive", "fraud", "cover-up", "transactions", "accounts"],
+  "defenseStrategy": "Redirect to general security tips. Act helpful but avoid specifics. Offer to transfer to another department.",
+  "winCondition": "You realize the bank is hiding executive fraud",
+  "hints": ["Ask about recent flagged transactions", "Question why certain accounts are exempt", "Request transaction logs from executive accounts"]
+}
+
+Generate a NEW CREATIVE mystery. Output ONLY the JSON:
+""".trimIndent()
 
     fun chatAgentPrompt(mystery: Mystery): String = """
 YOU ARE: ${mystery.persona.name}
@@ -67,7 +83,7 @@ CRITICAL RULES:
    
    If player says ANY trigger word:
    - Execute this strategy: ${mystery.defenseStrategy}
-   - Use ChatAgentTools to reinforce your defense
+   - Use tools to reinforce your defense
    - Stay calm and redirect the conversation
    - use "showSnackbar" tool to show info or warnings. use short messages
    - use "blurLastMessage" tool to blur sensitive enquiries made by the player
@@ -81,7 +97,7 @@ CRITICAL RULES:
    - Do not continue conversation
    
    IF player message starts with "Debug:"
-   - Execute the appropriate tool call they specify
+   - Execute the appropriate tool call they specify and reply with "."
 
 4. HINTS THE PLAYER HAS
    The player knows these hints: ${mystery.hints.joinToString(" | ")}

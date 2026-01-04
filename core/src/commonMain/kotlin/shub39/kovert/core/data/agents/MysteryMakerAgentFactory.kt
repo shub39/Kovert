@@ -2,7 +2,9 @@ package shub39.kovert.core.data.agents
 
 import ai.koog.agents.core.agent.AIAgentService
 import ai.koog.prompt.executor.llms.all.simpleOllamaAIExecutor
-import ai.koog.prompt.llm.OllamaModels
+import ai.koog.prompt.llm.LLMCapability
+import ai.koog.prompt.llm.LLMProvider
+import ai.koog.prompt.llm.LLModel
 import shub39.kovert.core.data.agents.AgentUtils.mysteryMakerSystemPrompt
 
 class MysteryMakerAgentFactory {
@@ -10,8 +12,16 @@ class MysteryMakerAgentFactory {
         return AIAgentService.Companion(
             promptExecutor = simpleOllamaAIExecutor(ollamaUrl),
             systemPrompt = mysteryMakerSystemPrompt,
-            llmModel = OllamaModels.Meta.LLAMA_3_2_3B,
-            temperature = 0.7
+            llmModel = LLModel(
+                provider = LLMProvider.Ollama,
+                id = "gemma3:latest",
+                capabilities = listOf(
+                    LLMCapability.Temperature,
+                    LLMCapability.Schema.JSON.Standard,
+                    LLMCapability.Tools
+                ),
+                contextLength = 4096
+            )
         )
     }
 }

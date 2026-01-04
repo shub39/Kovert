@@ -16,6 +16,7 @@ class ChatAgentToolsImpl : ToolSet, ChatAgentTools {
     val isGameEnded = MutableStateFlow(false)
     val snackBarHostState = SnackbarHostState()
 
+    @LLMDescription("blur sensitive enquiries")
     @Tool
     override fun blurLastMessage() {
         chatMessages.update {
@@ -30,6 +31,7 @@ class ChatAgentToolsImpl : ToolSet, ChatAgentTools {
         }
     }
 
+    @LLMDescription("show a short message with a snackbar, like warnings and alerts")
     @Tool
     override suspend fun showSnackbar(
         @LLMDescription("The message of the snackbar")
@@ -41,6 +43,7 @@ class ChatAgentToolsImpl : ToolSet, ChatAgentTools {
         )
     }
 
+    @LLMDescription("End the game")
     @Tool
     override fun endGame() {
         isGameEnded.update { true }
