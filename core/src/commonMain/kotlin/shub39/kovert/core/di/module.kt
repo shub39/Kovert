@@ -6,8 +6,8 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import shub39.kovert.core.data.agents.ChatAgentFactory
+import shub39.kovert.core.data.agents.ChatAgentToolsImpl
 import shub39.kovert.core.data.agents.MysteryFactory
-import shub39.kovert.core.data.agents.tools.ChatAgentToolsImpl
 import shub39.kovert.core.data.datastore.DataStoreFactory
 import shub39.kovert.core.data.datastore.KovertDatastoreImpl
 import shub39.kovert.core.domain.KovertDatastore

@@ -1,4 +1,4 @@
-package shub39.kovert.core.data.agents.tools
+package shub39.kovert.core.data.agents
 
 import ai.koog.agents.core.tools.annotations.LLMDescription
 import ai.koog.agents.core.tools.annotations.Tool
@@ -31,10 +31,10 @@ class ChatAgentToolsImpl : ToolSet, ChatAgentTools {
         }
     }
 
-    @LLMDescription("show a short message with a snackbar, like warnings and alerts")
+    @LLMDescription("show a short message with a snackbar")
     @Tool
     override suspend fun showSnackbar(
-        @LLMDescription("The message of the snackbar")
+        @LLMDescription("the message of the snackbar")
         message: String
     ) {
         snackBarHostState.showSnackbar(
@@ -43,7 +43,7 @@ class ChatAgentToolsImpl : ToolSet, ChatAgentTools {
         )
     }
 
-    @LLMDescription("End the game")
+    @LLMDescription("end the game")
     @Tool
     override fun endGame() {
         isGameEnded.update { true }

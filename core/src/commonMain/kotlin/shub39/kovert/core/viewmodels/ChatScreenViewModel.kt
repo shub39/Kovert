@@ -17,8 +17,8 @@ import kotlinx.coroutines.launch
 import shub39.kovert.core.chat_screen.ChatScreenAction
 import shub39.kovert.core.chat_screen.ChatScreenState
 import shub39.kovert.core.data.agents.ChatAgentFactory
+import shub39.kovert.core.data.agents.ChatAgentToolsImpl
 import shub39.kovert.core.data.agents.MysteryFactory
-import shub39.kovert.core.data.agents.tools.ChatAgentToolsImpl
 import shub39.kovert.core.domain.ChatMessage
 import shub39.kovert.core.domain.Entity
 import shub39.kovert.core.domain.KovertDatastore
@@ -84,12 +84,16 @@ class ChatScreenViewModel(
 
     private fun buildConversationPrompt(): String {
         val history = _state.value.chatMessages.takeLast(10)
-        return history.joinToString("\n") { msg ->
-            when (msg.sender) {
-                Entity.USER -> "PLAYER: ${msg.content}"
-                Entity.AI_AGENT -> "YOU: ${msg.content}"
-            }
-        }
+        return """
+            MESSAGES COUNT: ${state.value.chatMessages.size}
+            LAST 10 MESSAGES:
+            ${history.joinToString("\n") {
+                when (it.sender) {
+                    Entity.USER -> "PLAYER: ${it.content}"
+                    Entity.AI_AGENT -> "AGENT: ${it.content}"
+                }
+            }}}
+        """.trimIndent()
     }
 
     private suspend fun setupAgentsAndMystery() {

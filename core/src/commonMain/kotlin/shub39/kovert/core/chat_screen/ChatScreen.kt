@@ -40,8 +40,7 @@ import org.jetbrains.compose.resources.stringResource
 import shub39.kovert.core.chat_screen.components.ChatMessage
 import shub39.kovert.core.chat_screen.components.ChatScreenToolBar
 import shub39.kovert.core.chat_screen.components.ChatScreenTopAppBar
-import shub39.kovert.core.domain.ChatMessage
-import shub39.kovert.core.domain.Entity
+import shub39.kovert.core.chat_screen.components.TypingIndicator
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -154,12 +153,7 @@ fun ChatScreen(
 
                     if (state.isLoadingNewMessage) {
                         item {
-                            ChatMessage(
-                                chatMessage = ChatMessage(
-                                    sender = Entity.AI_AGENT,
-                                    content = "..."
-                                )
-                            )
+                            TypingIndicator()
                         }
                     }
                 }

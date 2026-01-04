@@ -4,6 +4,12 @@ plugins {
     alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.androidx.room)
+    alias(libs.plugins.ksp)
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
 kotlin {
@@ -44,6 +50,9 @@ kotlin {
             implementation(libs.hypnoticcanvas)
             implementation(libs.materialkolor)
             implementation(libs.androidx.datastore.core)
+            implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.room.compiler)
+            implementation(libs.androidx.sqlite.bundled)
             implementation(libs.bundles.ktor)
         }
         androidMain.dependencies {
@@ -59,4 +68,9 @@ kotlin {
     sourceSets.commonTest.dependencies {
         implementation(kotlin("test"))
     }
+}
+
+dependencies {
+    add("kspJvm", libs.androidx.room.compiler)
+    add("kspAndroid", libs.androidx.room.compiler)
 }

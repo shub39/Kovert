@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Card
-import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
@@ -60,23 +59,19 @@ fun ChatScreenToolBar(
             )
         }
 
-        if (!state.isLoadingNewMessage) {
-            FilledTonalIconButton(
-                onClick = {
-                    onAction(ChatScreenAction.SendMessage(newMessage))
-                    newMessage = ""
-                },
-                enabled = newMessage.isNotBlank() && state.mystery != null,
-                modifier = Modifier.size(IconButtonDefaults.mediumContainerSize())
-            ) {
-                Icon(
-                    painter = painterResource(Res.drawable.send),
-                    contentDescription = null,
-                    modifier = Modifier.size(IconButtonDefaults.mediumIconSize)
-                )
-            }
-        } else {
-            ContainedLoadingIndicator()
+        FilledTonalIconButton(
+            onClick = {
+                onAction(ChatScreenAction.SendMessage(newMessage))
+                newMessage = ""
+            },
+            enabled = newMessage.isNotBlank() && state.mystery != null && !state.isLoadingNewMessage,
+            modifier = Modifier.size(IconButtonDefaults.mediumContainerSize())
+        ) {
+            Icon(
+                painter = painterResource(Res.drawable.send),
+                contentDescription = null,
+                modifier = Modifier.size(IconButtonDefaults.mediumIconSize)
+            )
         }
     }
 }
