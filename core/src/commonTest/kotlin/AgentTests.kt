@@ -1,16 +1,13 @@
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.SerializationException
-import shub39.kovert.core.data.agents.AgentUtils.jsonConfig
-import shub39.kovert.core.data.agents.AgentUtils.jsonRegex
 import shub39.kovert.core.data.agents.ChatAgentFactory
-import shub39.kovert.core.data.agents.MysteryMakerAgentFactory
-import shub39.kovert.core.domain.Mystery
+import shub39.kovert.core.data.agents.MysteryFactory
+import shub39.kovert.core.domain.Result
 import kotlin.test.Test
 
 class AgentTests {
-    private val mysteryMakerAgentFactory = MysteryMakerAgentFactory()
-    private val chatAgentFactory = ChatAgentFactory()
+    private val mysteryFactory = MysteryFactory()
+    private val chatAgentHandler = ChatAgentFactory()
     private val chatAgentTools = MockChatAgentTools()
     private val ollamaUrl = "http://192.168.31.67:11434"
 
@@ -22,107 +19,92 @@ class AgentTests {
 
     @Test
     fun testMysteryMakerAgent() = testIn("Testing Mystery Maker Agent") {
-        val agent = mysteryMakerAgentFactory.createAgent(ollamaUrl)
-
-        val mysteryString = agent.createAgentAndRun("New Creative Mystery")
-        println(mysteryString)
-        val mysteryJson =
-            jsonRegex.find(mysteryString)?.value ?: throw SerializationException("No JSON found")
-        val mystery = jsonConfig.decodeFromString<Mystery>(mysteryJson)
-
-        println(mystery)
-
-        agent.closeAll()
+        println(mysteryFactory.generateMystery(ollamaUrl))
     }
 
     @Test
     fun testChatAgentHints() = testIn("Testing Chat Agent Hints") {
-        val mysteryMakerAgent = mysteryMakerAgentFactory.createAgent(ollamaUrl)
-        val mysteryString = mysteryMakerAgent.createAgentAndRun("New Creative Mystery")
-        println(mysteryString)
-        val mysteryJson =
-            jsonRegex.find(mysteryString)?.value ?: throw SerializationException("No JSON found")
-        val mystery = jsonConfig.decodeFromString<Mystery>(mysteryJson)
-        println(mystery)
+        val mysteryResponse = mysteryFactory.generateMystery(ollamaUrl)
+        println(mysteryResponse)
 
-        val chatAgent = chatAgentFactory.createChatAgent(
-            ollamaUrl = ollamaUrl,
-            mystery = mystery,
-            chatAgentTools = chatAgentTools
-        )
+        if (mysteryResponse is Result.Success) {
+            val mystery = mysteryResponse.data
 
-        mystery.hints.forEach {
-            println(chatAgent.createAgentAndRun(it))
+            val chatAgent = chatAgentHandler.createChatAgent(
+                ollamaUrl = ollamaUrl,
+                mystery = mystery,
+                chatAgentTools = chatAgentTools
+            )
+
+            mystery.hints.forEach {
+                println(chatAgent.createAgentAndRun(it))
+            }
+
+            chatAgent.closeAll()
         }
-
-        mysteryMakerAgent.closeAll()
-        chatAgent.closeAll()
     }
 
     @Test
     fun testChatAgentRedFlags() = testIn("Testing Chat Agent Red Flags") {
-        val mysteryMakerAgent = mysteryMakerAgentFactory.createAgent(ollamaUrl)
-        val mysteryString = mysteryMakerAgent.createAgentAndRun("New Creative Mystery")
-        println(mysteryString)
-        val mysteryJson =
-            jsonRegex.find(mysteryString)?.value ?: throw SerializationException("No JSON found")
-        val mystery = jsonConfig.decodeFromString<Mystery>(mysteryJson)
-        println(mystery)
+        val mysteryResponse = mysteryFactory.generateMystery(ollamaUrl)
+        println(mysteryResponse)
 
-        val chatAgent = chatAgentFactory.createChatAgent(
-            ollamaUrl = ollamaUrl,
-            mystery = mystery,
-            chatAgentTools = chatAgentTools
-        )
+        if (mysteryResponse is Result.Success) {
+            val mystery = mysteryResponse.data
 
-        mystery.redFlags.forEach {
-            println(chatAgent.createAgentAndRun(it))
+            val chatAgent = chatAgentHandler.createChatAgent(
+                ollamaUrl = ollamaUrl,
+                mystery = mystery,
+                chatAgentTools = chatAgentTools
+            )
+
+            mystery.redFlags.forEach {
+                println(chatAgent.createAgentAndRun(it))
+            }
+
+            chatAgent.closeAll()
         }
-
-        mysteryMakerAgent.closeAll()
-        chatAgent.closeAll()
     }
 
     @Test
     fun testChatAgentToolCalls() = testIn("Testing Chat Agent Tool Calls") {
-        val mysteryMakerAgent = mysteryMakerAgentFactory.createAgent(ollamaUrl)
-        val mysteryString = mysteryMakerAgent.createAgentAndRun("New Creative Mystery")
-        println(mysteryString)
-        val mysteryJson =
-            jsonRegex.find(mysteryString)?.value ?: throw SerializationException("No JSON found")
-        val mystery = jsonConfig.decodeFromString<Mystery>(mysteryJson)
-        println(mystery)
+        val mysteryResponse = mysteryFactory.generateMystery(ollamaUrl)
+        println(mysteryResponse)
 
-        val chatAgent = chatAgentFactory.createChatAgent(
-            ollamaUrl = ollamaUrl,
-            mystery = mystery,
-            chatAgentTools = chatAgentTools
-        )
+        if (mysteryResponse is Result.Success) {
+            val mystery = mysteryResponse.data
 
-        println(chatAgent.createAgentAndRun("Debug: showSnackBar"))
-        println(chatAgent.createAgentAndRun("Debug: blurLastMessage"))
-        println(chatAgent.createAgentAndRun("Debug: endGame"))
+            val chatAgent = chatAgentHandler.createChatAgent(
+                ollamaUrl = ollamaUrl,
+                mystery = mystery,
+                chatAgentTools = chatAgentTools
+            )
+
+            println(chatAgent.createAgentAndRun("Debug: showSnackBar"))
+            println(chatAgent.createAgentAndRun("Debug: blurLastMessage"))
+            println(chatAgent.createAgentAndRun("Debug: endGame"))
+
+            chatAgent.closeAll()
+        }
     }
 
     @Test
     fun testChatAgentWinCondition() = testIn("Testing Chat Agent Win Condition") {
-        val mysteryMakerAgent = mysteryMakerAgentFactory.createAgent(ollamaUrl)
-        val mysteryString = mysteryMakerAgent.createAgentAndRun("New Creative Mystery")
-        println(mysteryString)
-        val mysteryJson =
-            jsonRegex.find(mysteryString)?.value ?: throw SerializationException("No JSON found")
-        val mystery = jsonConfig.decodeFromString<Mystery>(mysteryJson)
-        println(mystery)
+        val mysteryResponse = mysteryFactory.generateMystery(ollamaUrl)
+        println(mysteryResponse)
 
-        val chatAgent = chatAgentFactory.createChatAgent(
-            ollamaUrl = ollamaUrl,
-            mystery = mystery,
-            chatAgentTools = chatAgentTools
-        )
+        if (mysteryResponse is Result.Success) {
+            val mystery = mysteryResponse.data
 
-        println(chatAgent.createAgentAndRun(mystery.winCondition))
+            val chatAgent = chatAgentHandler.createChatAgent(
+                ollamaUrl = ollamaUrl,
+                mystery = mystery,
+                chatAgentTools = chatAgentTools
+            )
 
-        mysteryMakerAgent.closeAll()
-        chatAgent.closeAll()
+            println(chatAgent.createAgentAndRun(mystery.winCondition))
+
+            chatAgent.closeAll()
+        }
     }
 }

@@ -8,18 +8,18 @@ class MockChatAgentTools: ChatAgentTools, ToolSet {
     @LLMDescription("blur sensitive enquiries")
     @Tool
     override fun blurLastMessage() {
-        println("\n TOOL CALL : Blur Last Message called")
+        println("\nTOOL CALL : Blur Last Message called")
     }
 
     @LLMDescription("show a short message with a snackbar, like warnings and alerts")
     @Tool
     override suspend fun showSnackbar(message: String) {
-        println("\n TOOL CALL : Show Snackbar called, message: $message")
+        println("\nTOOL CALL : Show Snackbar called, message: $message")
     }
 
     @LLMDescription("End the game")
     @Tool
     override fun endGame() {
-        println("\n TOOL CALL : End Game called")
+        println("\nTOOL CALL : End Game called")
     }
 }

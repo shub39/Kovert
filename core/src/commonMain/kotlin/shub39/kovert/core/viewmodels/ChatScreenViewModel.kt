@@ -1,5 +1,6 @@
 package shub39.kovert.core.viewmodels
 
+import ai.koog.agents.core.agent.GraphAIAgentService
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
@@ -13,31 +14,25 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.serialization.SerializationException
 import shub39.kovert.core.chat_screen.ChatScreenAction
 import shub39.kovert.core.chat_screen.ChatScreenState
-import shub39.kovert.core.data.agents.AIAgent
-import shub39.kovert.core.data.agents.AgentUtils.jsonConfig
 import shub39.kovert.core.data.agents.ChatAgentFactory
-import shub39.kovert.core.data.agents.MysteryMakerAgentFactory
+import shub39.kovert.core.data.agents.MysteryFactory
 import shub39.kovert.core.data.agents.tools.ChatAgentToolsImpl
 import shub39.kovert.core.domain.ChatMessage
 import shub39.kovert.core.domain.Entity
-import shub39.kovert.core.domain.Errors
 import shub39.kovert.core.domain.KovertDatastore
-import shub39.kovert.core.domain.Mystery
 import shub39.kovert.core.domain.Result
 
 class ChatScreenViewModel(
     private val datastore: KovertDatastore,
     private val chatAgentTools: ChatAgentToolsImpl,
-    private val mysteryMakerAgentFactory: MysteryMakerAgentFactory,
+    private val mysteryFactory: MysteryFactory,
     private val chatAgentFactory: ChatAgentFactory
 ) : ViewModel() {
     private var collectStateJob: Job? = null
 
-    private var _mysteryMakerAgent: AIAgent? = null
-    private var _chatAgent: AIAgent? = null
+    private var _chatAgent: GraphAIAgentService<String, String>? = null
 
     private val _state: MutableStateFlow<ChatScreenState> = MutableStateFlow(
         ChatScreenState(
@@ -50,9 +45,7 @@ class ChatScreenViewModel(
             setupAgentsAndMystery()
 
             chatAgentTools.chatMessages.update { emptyList() }
-
-            mysteryMakerAgentFactory
-
+            chatAgentTools.isGameEnded.update { false }
         }
         .stateIn(
             scope = viewModelScope,
@@ -102,9 +95,7 @@ class ChatScreenViewModel(
     private suspend fun setupAgentsAndMystery() {
         val ollamaUrl = datastore.getOllamaUrl().first()
 
-        _mysteryMakerAgent = mysteryMakerAgentFactory.createAgent(ollamaUrl)
-
-        when (val newMystery = generateNewMystery()) {
+        when (val newMystery = mysteryFactory.generateMystery(ollamaUrl)) {
             is Result.Error -> {
                 println("Could not create new mystery $newMystery")
             }
@@ -117,23 +108,6 @@ class ChatScreenViewModel(
                 )
                 _state.update { it.copy(mystery = newMystery.data) }
             }
-        }
-    }
-
-    suspend fun generateNewMystery(): Result<Mystery, Errors.AIErrors> {
-        val newMystery =
-            _mysteryMakerAgent?.createAgentAndRun("Creative Mystery")
-                ?: return Result.Error(
-                    Errors.AIErrors.RESPONSE_ERROR,
-                    "Can't create mystery, is the agent initialised?"
-                )
-
-        return try {
-            Result.Success(jsonConfig.decodeFromString(newMystery))
-        } catch (e: SerializationException) {
-            Result.Error(Errors.AIErrors.PARSE_ERROR, e.toString())
-        } catch (e: Exception) {
-            Result.Error(Errors.AIErrors.UNKNOWN_ERROR, e.toString())
         }
     }
 
