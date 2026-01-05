@@ -4,11 +4,13 @@ import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
+import androidx.room.TypeConverters
 
 @Database(
     entities = [MysteryDataEntity::class],
     version = 1
 )
+@TypeConverters(Converters::class)
 @ConstructedBy(DbConstructor::class)
 abstract class MysteryDatabase: RoomDatabase() {
     abstract val mysteryDataDao: MysteryDataDao
