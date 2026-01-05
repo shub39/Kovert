@@ -32,7 +32,7 @@ class AgentTests {
 
             chatAgentHandler.createChatAgent(
                 ollamaUrl = ollamaUrl,
-                mystery = mystery
+                mysteryData = mystery
             )
 
             mystery.hints.forEach {
@@ -53,7 +53,7 @@ class AgentTests {
 
             chatAgentHandler.createChatAgent(
                 ollamaUrl = ollamaUrl,
-                mystery = mystery,
+                mysteryData = mystery,
             )
 
             mystery.redFlags.forEach {
@@ -74,7 +74,7 @@ class AgentTests {
 
             chatAgentHandler.createChatAgent(
                 ollamaUrl = ollamaUrl,
-                mystery = mystery,
+                mysteryData = mystery,
             )
 
             println(chatAgentHandler.chatAgent?.createAgentAndRun("Debug: showSnackBar"))
@@ -95,7 +95,7 @@ class AgentTests {
 
             chatAgentHandler.createChatAgent(
                 ollamaUrl = ollamaUrl,
-                mystery = mystery,
+                mysteryData = mystery,
             )
 
             println(chatAgentHandler.chatAgent?.createAgentAndRun(mystery.winCondition))

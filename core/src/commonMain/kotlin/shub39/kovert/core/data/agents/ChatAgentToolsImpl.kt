@@ -8,26 +8,29 @@ import androidx.compose.material3.SnackbarHostState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import shub39.kovert.core.domain.ChatAgentTools
-import shub39.kovert.core.domain.ChatMessage
+import shub39.kovert.core.domain.MysteryData
 
 @LLMDescription("Tools to use in the game")
 class ChatAgentToolsImpl : ToolSet, ChatAgentTools {
-    val chatMessages = MutableStateFlow(emptyList<ChatMessage>())
-    val isGameEnded = MutableStateFlow(false)
+    val currentMysteryData = MutableStateFlow<MysteryData?>(null)
     val snackBarHostState = SnackbarHostState()
 
     @LLMDescription("blur sensitive enquiries")
     @Tool
     override fun blurLastMessage() {
-        chatMessages.update {
-            val lastMessage = it.lastOrNull()
-            if (lastMessage != null) {
-                it.dropLast(1) + lastMessage.copy(
-                    isBlurred = true
-                )
-            } else {
-                it
-            }
+        if (currentMysteryData.value == null) return
+
+        currentMysteryData.update {
+            val lastMessage = it!!.chatMessages.lastOrNull()
+            it.copy(
+               chatMessages = if (lastMessage != null) {
+                   it.chatMessages.dropLast(1) + lastMessage.copy(
+                       isBlurred = true
+                   )
+               } else {
+                   it.chatMessages
+               }
+            )
         }
     }
 
@@ -46,6 +49,12 @@ class ChatAgentToolsImpl : ToolSet, ChatAgentTools {
     @LLMDescription("end the game")
     @Tool
     override fun endGame() {
-        isGameEnded.update { true }
+        if (currentMysteryData.value == null) return
+
+        currentMysteryData.update {
+            it!!.copy(
+                isSolved = true
+            )
+        }
     }
 }

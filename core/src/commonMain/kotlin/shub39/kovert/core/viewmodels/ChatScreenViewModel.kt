@@ -6,9 +6,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -16,6 +14,8 @@ import kotlinx.coroutines.launch
 import shub39.kovert.core.data.agents.ChatAgentHandler
 import shub39.kovert.core.data.agents.ChatAgentToolsImpl
 import shub39.kovert.core.data.agents.MysteryFactory
+import shub39.kovert.core.data.database.MysteryDataDao
+import shub39.kovert.core.data.database.toMysteryEntity
 import shub39.kovert.core.domain.ChatMessage
 import shub39.kovert.core.domain.Entity
 import shub39.kovert.core.domain.KovertDatastore
@@ -25,6 +25,7 @@ import shub39.kovert.core.presentation.chat_screen.ChatScreenState
 
 class ChatScreenViewModel(
     private val datastore: KovertDatastore,
+    private val mysteryDataDao: MysteryDataDao,
     private val chatAgentTools: ChatAgentToolsImpl,
     private val mysteryFactory: MysteryFactory,
     private val chatAgentHandler: ChatAgentHandler
@@ -41,8 +42,11 @@ class ChatScreenViewModel(
             collectState()
             setupAgentsAndMystery()
 
-            chatAgentTools.chatMessages.update { emptyList() }
-            chatAgentTools.isGameEnded.update { false }
+            chatAgentTools.currentMysteryData.update {
+                it?.copy(
+                    chatMessages = emptyList()
+                )
+            }
         }
         .stateIn(
             scope = viewModelScope,
@@ -56,8 +60,10 @@ class ChatScreenViewModel(
                 _state.update {
                     it.copy(isLoadingNewMessage = true)
                 }
-                chatAgentTools.chatMessages.update {
-                    it + ChatMessage(Entity.PLAYER, action.message)
+                chatAgentTools.currentMysteryData.update {
+                    it?.copy(
+                        chatMessages = it.chatMessages + ChatMessage(Entity.PLAYER, action.message)
+                    )
                 }
 
                 viewModelScope.launch {
@@ -73,8 +79,16 @@ class ChatScreenViewModel(
             _state.update {
                 it.copy(isLoadingNewMessage = false)
             }
-            chatAgentTools.chatMessages.update {
-                it + ChatMessage(Entity.AGENT, response)
+            chatAgentTools.currentMysteryData.update {
+                it?.copy(
+                    chatMessages = it.chatMessages + ChatMessage(Entity.AGENT, response)
+                )
+            }
+        }
+
+        viewModelScope.launch {
+            chatAgentTools.currentMysteryData.value?.let {
+                mysteryDataDao.upsertMysteryData(it.toMysteryEntity())
             }
         }
     }
@@ -84,12 +98,14 @@ class ChatScreenViewModel(
         return """
             MESSAGES COUNT: ${state.value.chatMessages.size}
             LAST 10 MESSAGES:
-            ${history.joinToString("\n") {
+            ${
+            history.joinToString("\n") {
                 when (it.sender) {
                     Entity.PLAYER -> "PLAYER: ${it.content}"
                     Entity.AGENT -> "AGENT: ${it.content}"
                 }
-            }}}
+            }
+        }}
         """.trimIndent()
     }
 
@@ -98,17 +114,17 @@ class ChatScreenViewModel(
 
         val ollamaUrl = datastore.getOllamaUrl().first()
 
-        when (val newMystery = mysteryFactory.generateMystery(ollamaUrl)) {
+        when (val newMysteryData = mysteryFactory.generateMystery(ollamaUrl)) {
             is Result.Error -> {
-                println("Could not create new mystery $newMystery")
+                println("Could not create new mystery $newMysteryData")
             }
 
             is Result.Success -> {
                 chatAgentHandler.createChatAgent(
                     ollamaUrl = ollamaUrl,
-                    mystery = newMystery.data
+                    mysteryData = newMysteryData.data
                 )
-                _state.update { it.copy(mystery = newMystery.data) }
+                chatAgentTools.currentMysteryData.update { newMysteryData.data }
             }
         }
     }
@@ -116,19 +132,17 @@ class ChatScreenViewModel(
     private fun collectState() {
         collectStateJob?.cancel()
         collectStateJob = viewModelScope.launch {
-            combine(
-                chatAgentTools.chatMessages,
-                chatAgentTools.isGameEnded,
-                chatAgentHandler.currentMystery
-            ) { chatMessages, isGameEnd, mystery ->
-                _state.update {
-                    it.copy(
-                        chatMessages = chatMessages,
-                        isGameEnd = isGameEnd,
-                        mystery = mystery
-                    )
+            chatAgentTools.currentMysteryData.collect { mysteryData ->
+                if (mysteryData != null) {
+                    _state.update {
+                        it.copy(
+                            chatMessages = mysteryData.chatMessages,
+                            isGameEnd = mysteryData.isSolved,
+                            mystery = mysteryData.mystery
+                        )
+                    }
                 }
-            }.launchIn(this)
+            }
         }
     }
 }

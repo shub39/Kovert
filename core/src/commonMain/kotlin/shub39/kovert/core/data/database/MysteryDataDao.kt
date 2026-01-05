@@ -1,6 +1,7 @@
 package shub39.kovert.core.data.database
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
@@ -9,6 +10,9 @@ import kotlinx.coroutines.flow.Flow
 interface MysteryDataDao {
     @Upsert
     suspend fun upsertMysteryData(mysteryData: MysteryDataEntity)
+
+    @Delete
+    suspend fun deleteMysteryData(mysteryData: MysteryDataEntity)
 
     @Query("SELECT * FROM mystery_data WHERE id = :id")
     suspend fun getMysteryDataById(id: Long): MysteryDataEntity?

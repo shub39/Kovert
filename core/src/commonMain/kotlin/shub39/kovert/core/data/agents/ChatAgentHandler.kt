@@ -4,30 +4,26 @@ import ai.koog.agents.core.agent.AIAgentService
 import ai.koog.agents.core.agent.GraphAIAgentService
 import ai.koog.agents.core.agent.context.RollbackStrategy
 import ai.koog.agents.core.tools.ToolRegistry
-import ai.koog.agents.core.tools.reflect.tools
 import ai.koog.agents.snapshot.feature.Persistence
 import ai.koog.agents.snapshot.providers.InMemoryPersistenceStorageProvider
 import ai.koog.prompt.executor.llms.all.simpleOllamaAIExecutor
 import ai.koog.prompt.llm.OllamaModels
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
 import shub39.kovert.core.domain.ChatAgentTools
 import shub39.kovert.core.domain.Mystery
+import shub39.kovert.core.domain.MysteryData
 
 class ChatAgentHandler(
     private val chatAgentTools: ChatAgentTools
 ) {
-    val currentMystery = MutableStateFlow<Mystery?>(null)
     var chatAgent: GraphAIAgentService<String, String>? = null
 
     fun createChatAgent(
         ollamaUrl: String,
-        mystery: Mystery,
+        mysteryData: MysteryData,
     ) {
-        currentMystery.update { mystery }
         chatAgent = AIAgentService.Companion(
             promptExecutor = simpleOllamaAIExecutor(ollamaUrl),
-            systemPrompt = chatAgentPrompt(mystery),
+            systemPrompt = chatAgentPrompt(mysteryData.mystery),
             llmModel = OllamaModels.Meta.LLAMA_3_2_3B,
             temperature = 0.5,
             toolRegistry = ToolRegistry {

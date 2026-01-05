@@ -4,12 +4,43 @@ import ai.koog.prompt.dsl.prompt
 import ai.koog.prompt.executor.llms.all.simpleOllamaAIExecutor
 import ai.koog.prompt.llm.OllamaModels
 import ai.koog.prompt.structure.executeStructured
+import shub39.kovert.core.data.database.MysteryDataDao
+import shub39.kovert.core.data.database.toMysteryEntity
 import shub39.kovert.core.domain.Errors
 import shub39.kovert.core.domain.Mystery
+import shub39.kovert.core.domain.MysteryData
 import shub39.kovert.core.domain.Persona
 import shub39.kovert.core.domain.Result
 
-class MysteryFactory {
+class MysteryFactory(
+    private val mysteryDataDao: MysteryDataDao
+) {
+    suspend fun generateMystery(ollamaUrl: String): Result<MysteryData, Errors.AIErrors> {
+        val promptExecutor = simpleOllamaAIExecutor(ollamaUrl)
+
+        return try {
+            val response = promptExecutor.executeStructured<Mystery>(
+                prompt = prompt(mysteryIdeas.random()),
+                model = OllamaModels.Meta.LLAMA_3_2_3B,
+                examples = examples
+            )
+            val mystery = response.getOrThrow().data
+            val mysteryData = MysteryData(
+                mystery = mystery,
+                chatMessages = emptyList(),
+                isSolved = false
+            )
+
+            mysteryDataDao.upsertMysteryData(
+                mysteryData.toMysteryEntity()
+            )
+
+            Result.Success(mysteryData)
+        } catch (e: Exception) {
+            Result.Error(Errors.AIErrors.UNKNOWN_ERROR, e.toString())
+        }
+    }
+
     companion object {
         private val mysteryIdeas = listOf(
             // Data & Privacy
@@ -194,23 +225,6 @@ class MysteryFactory {
             )
 
             user("create a new mystery on the theme: $mysteryIdea")
-        }
-    }
-
-    suspend fun generateMystery(ollamaUrl: String): Result<Mystery, Errors.AIErrors> {
-        val promptExecutor = simpleOllamaAIExecutor(ollamaUrl)
-
-        return try {
-            val response = promptExecutor.executeStructured<Mystery>(
-                prompt = prompt(mysteryIdeas.random()),
-                model = OllamaModels.Meta.LLAMA_3_2_3B,
-                examples = examples
-            )
-            val mystery = response.getOrThrow().data
-
-            Result.Success(mystery)
-        } catch (e: Exception) {
-            Result.Error(Errors.AIErrors.UNKNOWN_ERROR, e.toString())
         }
     }
 }
