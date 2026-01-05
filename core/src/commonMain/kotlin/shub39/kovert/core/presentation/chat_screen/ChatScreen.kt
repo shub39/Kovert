@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,21 +19,32 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.materialkolor.DynamicMaterialTheme
 import com.materialkolor.PaletteStyle
 import kovert.core.generated.resources.Res
+import kovert.core.generated.resources.hint
 import kovert.core.generated.resources.hints
+import kovert.core.generated.resources.save
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import shub39.kovert.core.presentation.chat_screen.components.ChatMessage
 import shub39.kovert.core.presentation.chat_screen.components.ChatScreenToolBar
@@ -48,6 +60,7 @@ fun ChatScreen(
     onAction: (ChatScreenAction) -> Unit,
 ) {
     val listState = rememberLazyListState()
+    var showHints by remember { mutableStateOf(false) }
 
     LaunchedEffect(state.chatMessages.size, state.isLoadingNewMessage) {
         if (state.chatMessages.isNotEmpty() || state.isLoadingNewMessage) {
@@ -76,7 +89,8 @@ fun ChatScreen(
                 ) {
                     ChatScreenTopBar(
                         onNavigateUp = onNavigateUp,
-                        state = state
+                        state = state,
+                        onShowHints = { showHints = true }
                     )
 
                     LazyColumn(
@@ -109,29 +123,6 @@ fun ChatScreen(
                             }
 
                             item {
-                                OutlinedCard(
-                                    shape = MaterialTheme.shapes.medium
-                                ) {
-                                    Column(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(16.dp)
-                                    ) {
-                                        Text(
-                                            text = stringResource(Res.string.hints),
-                                            style = MaterialTheme.typography.titleSmallEmphasized
-                                        )
-                                        mystery.hints.forEach { hint ->
-                                            Text(
-                                                text = "- $hint",
-                                                style = MaterialTheme.typography.bodyMedium
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-
-                            item {
                                 Spacer(modifier = Modifier.height(32.dp))
                             }
                         }
@@ -158,6 +149,41 @@ fun ChatScreen(
                         state = state,
                         onAction = onAction
                     )
+                }
+
+                if (showHints) {
+                    ModalBottomSheet(onDismissRequest = { showHints = false }) {
+                        Column {
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Icon(
+                                    painter = painterResource(Res.drawable.hint),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(64.dp)
+                                )
+                                Spacer(modifier = Modifier.height(6.dp))
+                                Text(
+                                    text = stringResource(Res.string.hints),
+                                    style = MaterialTheme.typography.titleLarge.copy(textAlign = TextAlign.Center)
+                                )
+                                Spacer(modifier = Modifier.height(12.dp))
+                                HorizontalDivider()
+                            }
+                            LazyColumn(
+                                contentPadding = PaddingValues(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                items(state.mystery?.hints ?: emptyList()) { hint ->
+                                    Text(
+                                        text = hint,
+                                        style = MaterialTheme.typography.bodyLarge
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

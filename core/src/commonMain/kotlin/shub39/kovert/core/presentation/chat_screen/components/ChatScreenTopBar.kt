@@ -2,6 +2,7 @@ package shub39.kovert.core.presentation.chat_screen.components
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ContainedLoadingIndicator
@@ -31,6 +33,7 @@ import com.mikepenz.hypnoticcanvas.shaderBackground
 import com.mikepenz.hypnoticcanvas.shaders.MeshGradient
 import kovert.core.generated.resources.Res
 import kovert.core.generated.resources.arrow_back
+import kovert.core.generated.resources.hint
 import org.jetbrains.compose.resources.painterResource
 import shub39.kovert.core.presentation.chat_screen.ChatScreenState
 
@@ -39,14 +42,19 @@ import shub39.kovert.core.presentation.chat_screen.ChatScreenState
 fun ChatScreenTopBar(
     modifier: Modifier = Modifier,
     state: ChatScreenState,
-    onNavigateUp: () -> Unit
+    onNavigateUp: () -> Unit,
+    onShowHints: () -> Unit
 ) {
     Column(
         modifier = modifier.animateContentSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(
                 onClick = onNavigateUp,
@@ -56,6 +64,14 @@ fun ChatScreenTopBar(
                     painter = painterResource(Res.drawable.arrow_back),
                     contentDescription = null
                 )
+            }
+            if (state.mystery != null) {
+                IconButton(onClick = onShowHints) {
+                    Icon(
+                        painter = painterResource(Res.drawable.hint),
+                        contentDescription = "Hints"
+                    )
+                }
             }
         }
 
