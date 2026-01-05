@@ -5,6 +5,7 @@ import ai.koog.agents.core.agent.GraphAIAgentService
 import ai.koog.agents.core.agent.context.RollbackStrategy
 import ai.koog.agents.core.tools.ToolRegistry
 import ai.koog.agents.snapshot.feature.Persistence
+import ai.koog.agents.core.tools.reflect.tools
 import ai.koog.agents.snapshot.providers.InMemoryPersistenceStorageProvider
 import ai.koog.prompt.executor.llms.all.simpleOllamaAIExecutor
 import ai.koog.prompt.llm.OllamaModels
@@ -38,6 +39,11 @@ class ChatAgentHandler(
         }
     }
 
+    suspend fun destroyAgent() {
+        chatAgent?.closeAll()
+        chatAgent = null
+    }
+
     companion object {
         private fun chatAgentPrompt(mystery: Mystery): String = """
 YOU ARE: ${mystery.persona.name}
@@ -69,6 +75,12 @@ ${mystery.defenseStrategy}
 You can use tools silently:
 - showSnackbar: Show brief warnings (under 10 words)
 - blurLastMessage: Hide player's sensitive questions
+- changeTheme: Change chat appearance to reflect your state
+  → "NORMAL": Calm, everything is fine
+  → "SUSPICIOUS": Player asking odd questions
+  → "DEFENSIVE": Feeling threatened, protecting secret
+  → "PANIC": Cornered, making mistakes
+  → "NERVOUS": Uncertain, anxious about exposure
 
 ═══ GIVING CLUES ═══
 

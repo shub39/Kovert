@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "16310f6dda5c112c56c0301665787dfc",
+    "identityHash": "ec082d7d054abb6d69990761dba514ed",
     "entities": [
       {
         "tableName": "mystery_data",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `mystery` TEXT NOT NULL, `chatMessages` TEXT NOT NULL, `isSolved` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `mystery` TEXT NOT NULL, `chatMessages` TEXT NOT NULL, `isSolved` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -34,7 +34,7 @@
           }
         ],
         "primaryKey": {
-          "autoGenerate": true,
+          "autoGenerate": false,
           "columnNames": [
             "id"
           ]
@@ -43,7 +43,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '16310f6dda5c112c56c0301665787dfc')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ec082d7d054abb6d69990761dba514ed')"
     ]
   }
 }

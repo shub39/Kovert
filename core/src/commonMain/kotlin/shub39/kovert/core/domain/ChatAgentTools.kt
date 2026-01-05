@@ -4,6 +4,7 @@ import ai.koog.agents.core.tools.reflect.ToolSet
 
 interface ChatAgentTools : ToolSet {
     fun blurLastMessage()
-    suspend fun showSnackbar(message: String)
+    fun showSnackbar(message: String)
     fun endGame()
+    fun changeTheme(theme: String)
 }

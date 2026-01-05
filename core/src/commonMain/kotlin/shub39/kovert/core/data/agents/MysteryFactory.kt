@@ -4,16 +4,16 @@ import ai.koog.prompt.dsl.prompt
 import ai.koog.prompt.executor.llms.all.simpleOllamaAIExecutor
 import ai.koog.prompt.llm.OllamaModels
 import ai.koog.prompt.structure.executeStructured
-import shub39.kovert.core.data.database.MysteryDataDao
-import shub39.kovert.core.data.database.toMysteryEntity
+import kotlinx.coroutines.flow.first
 import shub39.kovert.core.domain.Errors
 import shub39.kovert.core.domain.Mystery
 import shub39.kovert.core.domain.MysteryData
+import shub39.kovert.core.domain.MysteryDataRepo
 import shub39.kovert.core.domain.Persona
 import shub39.kovert.core.domain.Result
 
 class MysteryFactory(
-    private val mysteryDataDao: MysteryDataDao
+    private val repo: MysteryDataRepo
 ) {
     suspend fun generateMystery(ollamaUrl: String): Result<MysteryData, Errors.AIErrors> {
         val promptExecutor = simpleOllamaAIExecutor(ollamaUrl)
@@ -25,17 +25,17 @@ class MysteryFactory(
                 examples = examples
             )
             val mystery = response.getOrThrow().data
+            val newId = repo.getMysteryData().first().size + 1
             val mysteryData = MysteryData(
+                id = newId.toLong(),
                 mystery = mystery,
                 chatMessages = emptyList(),
                 isSolved = false
             )
 
-            mysteryDataDao.upsertMysteryData(
-                mysteryData.toMysteryEntity()
-            )
-
-            Result.Success(mysteryData)
+            Result.Success<MysteryData, Errors.AIErrors>(mysteryData).also {
+                repo.upsertMysteryData(it.data)
+            }
         } catch (e: Exception) {
             Result.Error(Errors.AIErrors.UNKNOWN_ERROR, e.toString())
         }

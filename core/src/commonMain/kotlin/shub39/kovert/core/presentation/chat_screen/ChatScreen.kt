@@ -18,28 +18,25 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import com.materialkolor.DynamicMaterialTheme
+import com.materialkolor.PaletteStyle
 import kovert.core.generated.resources.Res
 import kovert.core.generated.resources.hints
 import org.jetbrains.compose.resources.stringResource
 import shub39.kovert.core.presentation.chat_screen.components.ChatMessage
 import shub39.kovert.core.presentation.chat_screen.components.ChatScreenToolBar
-import shub39.kovert.core.presentation.chat_screen.components.ChatScreenTopAppBar
+import shub39.kovert.core.presentation.chat_screen.components.ChatScreenTopBar
 import shub39.kovert.core.presentation.chat_screen.components.TypingIndicator
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
@@ -59,101 +56,92 @@ fun ChatScreen(
     }
 
     DynamicMaterialTheme(
-        seedColor = Color(0xFFCEEAD6),
+        seedColor = state.chatOrb.colors.first(),
+        style = if (state.mystery == null) PaletteStyle.Monochrome else PaletteStyle.Expressive,
         isDark = true
     ) {
-        val nestedScroll = TopAppBarDefaults.enterAlwaysScrollBehavior()
         Scaffold(
-            modifier = modifier
-                .nestedScroll(nestedScroll.nestedScrollConnection)
-                .imePadding(),
+            modifier = modifier.imePadding(),
             snackbarHost = { SnackbarHost(state.snackBarHostState) },
-            topBar = {
-                ChatScreenTopAppBar(
-                    state = state,
-                    onNavigateUp = onNavigateUp,
-                    scrollBehavior = nestedScroll
-                )
-            }
         ) { padding ->
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.fillMaxSize()
             ) {
-                LazyColumn(
-                    state = listState,
-                    modifier = Modifier
-                        .widthIn(max = 600.dp)
-                        .fillMaxSize(),
-                    contentPadding = PaddingValues(
+                Column(
+                    modifier = Modifier.padding(
                         top = padding.calculateTopPadding() + 16.dp,
-                        bottom = padding.calculateBottomPadding() + 240.dp,
-                        start = padding.calculateLeftPadding(LocalLayoutDirection.current) + 16.dp,
-                        end = padding.calculateEndPadding(LocalLayoutDirection.current) + 16.dp
-                    ),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                        bottom = padding.calculateBottomPadding()
+                    )
                 ) {
-                    if (state.mystery == null) {
-                        item {
-                            LoadingIndicator(
-                                modifier = Modifier.padding(32.dp)
-                            )
-                        }
-                    }
+                    ChatScreenTopBar(
+                        onNavigateUp = onNavigateUp,
+                        state = state
+                    )
 
-                    state.mystery?.let { mystery ->
-                        item {
-                            Card(
-                                shape = MaterialTheme.shapes.medium
-                            ) {
-                                Text(
-                                    text = mystery.persona.introduction,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(16.dp)
-                                )
-                            }
-                        }
-
-                        item {
-                            OutlinedCard(
-                                shape = MaterialTheme.shapes.medium
-                            ) {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(16.dp)
+                    LazyColumn(
+                        state = listState,
+                        modifier = Modifier
+                            .widthIn(max = 600.dp)
+                            .fillMaxSize(),
+                        contentPadding = PaddingValues(
+                            top = 16.dp,
+                            bottom = 240.dp,
+                            start = padding.calculateLeftPadding(LocalLayoutDirection.current) + 16.dp,
+                            end = padding.calculateEndPadding(LocalLayoutDirection.current) + 16.dp
+                        ),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        state.mystery?.let { mystery ->
+                            item {
+                                Card(
+                                    shape = MaterialTheme.shapes.medium
                                 ) {
                                     Text(
-                                        text = stringResource(Res.string.hints),
-                                        style = MaterialTheme.typography.titleSmallEmphasized
+                                        text = mystery.persona.introduction,
+                                        style = MaterialTheme.typography.titleMedium,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp)
                                     )
-                                    mystery.hints.forEach { hint ->
+                                }
+                            }
+
+                            item {
+                                OutlinedCard(
+                                    shape = MaterialTheme.shapes.medium
+                                ) {
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp)
+                                    ) {
                                         Text(
-                                            text = "- $hint",
-                                            style = MaterialTheme.typography.bodyMedium
+                                            text = stringResource(Res.string.hints),
+                                            style = MaterialTheme.typography.titleSmallEmphasized
                                         )
+                                        mystery.hints.forEach { hint ->
+                                            Text(
+                                                text = "- $hint",
+                                                style = MaterialTheme.typography.bodyMedium
+                                            )
+                                        }
                                     }
                                 }
                             }
+
+                            item {
+                                Spacer(modifier = Modifier.height(32.dp))
+                            }
                         }
 
-                        item {
-                            Spacer(modifier = Modifier.height(32.dp))
+                        items(state.chatMessages) { message ->
+                            ChatMessage(chatMessage = message)
                         }
-                    }
 
-                    items(state.chatMessages) { message ->
-                        ChatMessage(
-                            chatMessage = message
-                        )
-                    }
-
-                    if (state.isLoadingNewMessage) {
-                        item {
-                            TypingIndicator()
+                        if (state.isLoadingNewMessage) {
+                            item { TypingIndicator() }
                         }
                     }
                 }
@@ -163,7 +151,7 @@ fun ChatScreen(
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                             .padding(
-                                bottom = padding.calculateBottomPadding() + 32.dp,
+                                bottom = padding.calculateBottomPadding() + 16.dp,
                                 start = padding.calculateLeftPadding(LocalLayoutDirection.current) + 16.dp,
                                 end = padding.calculateEndPadding(LocalLayoutDirection.current) + 16.dp
                             ),

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
     <string name="kovert">Kovert</string>
-    <string name="generating_mystery">Generating Mystery...</string>
     <string name="hints">Hints</string>
     <string name="type_message">Type your message here</string>
     <string name="kovert_desc">A social engineering mystery game</string>
     <string name="new_game">New Game</string>
     <string name="load_game">Load Game</string>
     <string name="enter_ollama_url">Enter Ollama Url</string>
+    <string name="saved_games">Saved Games</string>
 </resources>

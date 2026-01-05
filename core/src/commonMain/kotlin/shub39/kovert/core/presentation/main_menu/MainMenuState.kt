@@ -9,5 +9,5 @@ import shub39.kovert.core.domain.MysteryData
 data class MainMenuState(
     val allMysteryData: List<MysteryData> = emptyList(),
     val ollamaUrl: String = "http://localhost:11434",
-    val isValidUrl: Boolean = false
+    val isValidUrl: Boolean = false,
 )

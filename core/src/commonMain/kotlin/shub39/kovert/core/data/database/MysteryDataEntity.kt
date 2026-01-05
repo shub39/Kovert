@@ -8,7 +8,7 @@ import shub39.kovert.core.domain.MysteryData
 
 @Entity(tableName = "mystery_data")
 data class MysteryDataEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @PrimaryKey val id: Long = 0,
     val mystery: Mystery,
     val chatMessages: List<ChatMessage>,
     val isSolved: Boolean

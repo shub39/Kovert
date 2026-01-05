@@ -14,11 +14,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import shub39.kovert.core.data.agents.ChatAgentHandler
 import shub39.kovert.core.data.agents.ChatAgentToolsImpl
-import shub39.kovert.core.data.database.MysteryDataDao
-import shub39.kovert.core.data.database.toMysteryData
-import shub39.kovert.core.data.database.toMysteryEntity
 import shub39.kovert.core.data.network.OllamaApiChecker
 import shub39.kovert.core.domain.KovertDatastore
+import shub39.kovert.core.domain.MysteryDataRepo
 import shub39.kovert.core.presentation.main_menu.MainMenuAction
 import shub39.kovert.core.presentation.main_menu.MainMenuState
 
@@ -26,7 +24,7 @@ class MainMenuViewModel(
     private val chatAgentToolsImpl: ChatAgentToolsImpl,
     private val chatAgentHandler: ChatAgentHandler,
     private val datastore: KovertDatastore,
-    private val mysteryDataDao: MysteryDataDao
+    private val repo: MysteryDataRepo
 ) : ViewModel() {
     private var syncJob: Job? = null
     private var urlCheckerJob: Job? = null
@@ -49,6 +47,10 @@ class MainMenuViewModel(
                 onCheckUrl(action.url)
             }
 
+            MainMenuAction.OnLoadNewData -> viewModelScope.launch {
+                chatAgentHandler.destroyAgent()
+            }
+
             is MainMenuAction.OnLoadMysteryData -> {
                 chatAgentHandler.createChatAgent(
                     ollamaUrl = _state.value.ollamaUrl,
@@ -59,7 +61,7 @@ class MainMenuViewModel(
 
             is MainMenuAction.OnDeleteMysteryData -> {
                 viewModelScope.launch {
-                    mysteryDataDao.deleteMysteryData(action.mysteryData.toMysteryEntity())
+                    repo.deleteMysteryData(action.mysteryData)
                 }
             }
         }
@@ -76,10 +78,10 @@ class MainMenuViewModel(
                 }
                 .launchIn(this)
 
-            mysteryDataDao
+            repo
                 .getMysteryData()
                 .onEach { mysteryData ->
-                    _state.update { mainMenuState -> mainMenuState.copy(allMysteryData = mysteryData.map { it.toMysteryData() }) }
+                    _state.update { mainMenuState -> mainMenuState.copy(allMysteryData = mysteryData) }
                 }
                 .launchIn(this)
         }

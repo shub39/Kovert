@@ -6,6 +6,7 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import shub39.kovert.core.data.MysteryDataRepoImpl
 import shub39.kovert.core.data.agents.ChatAgentHandler
 import shub39.kovert.core.data.agents.ChatAgentToolsImpl
 import shub39.kovert.core.data.agents.MysteryFactory
@@ -15,6 +16,7 @@ import shub39.kovert.core.data.datastore.DataStoreFactory
 import shub39.kovert.core.data.datastore.KovertDatastoreImpl
 import shub39.kovert.core.domain.ChatAgentTools
 import shub39.kovert.core.domain.KovertDatastore
+import shub39.kovert.core.domain.MysteryDataRepo
 import shub39.kovert.core.viewmodels.ChatScreenViewModel
 import shub39.kovert.core.viewmodels.MainMenuViewModel
 
@@ -31,6 +33,7 @@ val sharedModules = module {
             .build()
     }
     single { get<MysteryDatabase>().mysteryDataDao }
+    singleOf(::MysteryDataRepoImpl).bind<MysteryDataRepo>()
 
     // agents
     singleOf(::ChatAgentHandler)

@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class MysteryData(
-    val id: Long = 0,
+    val id: Long,
     val mystery: Mystery,
     val chatMessages: List<ChatMessage>,
     val isSolved: Boolean

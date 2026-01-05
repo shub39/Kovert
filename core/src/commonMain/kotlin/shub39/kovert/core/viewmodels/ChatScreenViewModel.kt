@@ -6,7 +6,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -14,18 +16,18 @@ import kotlinx.coroutines.launch
 import shub39.kovert.core.data.agents.ChatAgentHandler
 import shub39.kovert.core.data.agents.ChatAgentToolsImpl
 import shub39.kovert.core.data.agents.MysteryFactory
-import shub39.kovert.core.data.database.MysteryDataDao
-import shub39.kovert.core.data.database.toMysteryEntity
 import shub39.kovert.core.domain.ChatMessage
+import shub39.kovert.core.domain.ChatOrb
 import shub39.kovert.core.domain.Entity
 import shub39.kovert.core.domain.KovertDatastore
+import shub39.kovert.core.domain.MysteryDataRepo
 import shub39.kovert.core.domain.Result
 import shub39.kovert.core.presentation.chat_screen.ChatScreenAction
 import shub39.kovert.core.presentation.chat_screen.ChatScreenState
 
 class ChatScreenViewModel(
     private val datastore: KovertDatastore,
-    private val mysteryDataDao: MysteryDataDao,
+    private val repo: MysteryDataRepo,
     private val chatAgentTools: ChatAgentToolsImpl,
     private val mysteryFactory: MysteryFactory,
     private val chatAgentHandler: ChatAgentHandler
@@ -41,12 +43,6 @@ class ChatScreenViewModel(
         .onStart {
             collectState()
             setupAgentsAndMystery()
-
-            chatAgentTools.currentMysteryData.update {
-                it?.copy(
-                    chatMessages = emptyList()
-                )
-            }
         }
         .stateIn(
             scope = viewModelScope,
@@ -85,12 +81,6 @@ class ChatScreenViewModel(
                 )
             }
         }
-
-        viewModelScope.launch {
-            chatAgentTools.currentMysteryData.value?.let {
-                mysteryDataDao.upsertMysteryData(it.toMysteryEntity())
-            }
-        }
     }
 
     private fun buildConversationPrompt(): String {
@@ -110,6 +100,8 @@ class ChatScreenViewModel(
     }
 
     private suspend fun setupAgentsAndMystery() {
+        chatAgentTools.chatOrb.update { ChatOrb.NORMAL }
+
         if (chatAgentHandler.chatAgent != null) return
 
         val ollamaUrl = datastore.getOllamaUrl().first()
@@ -132,7 +124,12 @@ class ChatScreenViewModel(
     private fun collectState() {
         collectStateJob?.cancel()
         collectStateJob = viewModelScope.launch {
-            chatAgentTools.currentMysteryData.collect { mysteryData ->
+            combine(
+                chatAgentTools.chatOrb,
+                chatAgentTools.currentMysteryData
+            ) { chatOrb, mysteryData ->
+                _state.update { it.copy(chatOrb = chatOrb) }
+
                 if (mysteryData != null) {
                     _state.update {
                         it.copy(
@@ -141,8 +138,10 @@ class ChatScreenViewModel(
                             mystery = mysteryData.mystery
                         )
                     }
+
+                    repo.upsertMysteryData(mysteryData)
                 }
-            }
+            }.launchIn(this)
         }
     }
 }

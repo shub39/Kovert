@@ -13,7 +13,7 @@ class MockChatAgentTools: ChatAgentTools, ToolSet {
 
     @LLMDescription("show a short message with a snackbar, like warnings and alerts")
     @Tool
-    override suspend fun showSnackbar(message: String) {
+    override fun showSnackbar(message: String) {
         println("\nTOOL CALL : Show Snackbar called, message: $message")
     }
 
@@ -21,5 +21,14 @@ class MockChatAgentTools: ChatAgentTools, ToolSet {
     @Tool
     override fun endGame() {
         println("\nTOOL CALL : End Game called")
+    }
+
+    @LLMDescription("change the theme of the game")
+    @Tool
+    override fun changeTheme(
+        @LLMDescription("change theme to any of: NORMAL, SUSPICIOUS, DEFENSIVE, PANIC, NERVOUS")
+        theme: String
+    ) {
+        println("\nTOOL CALL : Change Theme called, theme: $theme")
     }
 }
