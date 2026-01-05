@@ -1,6 +1,5 @@
 package shub39.kovert.core.viewmodels
 
-import ai.koog.agents.core.agent.GraphAIAgentService
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
@@ -14,25 +13,23 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import shub39.kovert.core.chat_screen.ChatScreenAction
-import shub39.kovert.core.chat_screen.ChatScreenState
-import shub39.kovert.core.data.agents.ChatAgentFactory
+import shub39.kovert.core.data.agents.ChatAgentHandler
 import shub39.kovert.core.data.agents.ChatAgentToolsImpl
 import shub39.kovert.core.data.agents.MysteryFactory
 import shub39.kovert.core.domain.ChatMessage
 import shub39.kovert.core.domain.Entity
 import shub39.kovert.core.domain.KovertDatastore
 import shub39.kovert.core.domain.Result
+import shub39.kovert.core.presentation.chat_screen.ChatScreenAction
+import shub39.kovert.core.presentation.chat_screen.ChatScreenState
 
 class ChatScreenViewModel(
     private val datastore: KovertDatastore,
     private val chatAgentTools: ChatAgentToolsImpl,
     private val mysteryFactory: MysteryFactory,
-    private val chatAgentFactory: ChatAgentFactory
+    private val chatAgentHandler: ChatAgentHandler
 ) : ViewModel() {
     private var collectStateJob: Job? = null
-
-    private var _chatAgent: GraphAIAgentService<String, String>? = null
 
     private val _state: MutableStateFlow<ChatScreenState> = MutableStateFlow(
         ChatScreenState(
@@ -60,7 +57,7 @@ class ChatScreenViewModel(
                     it.copy(isLoadingNewMessage = true)
                 }
                 chatAgentTools.chatMessages.update {
-                    it + ChatMessage(Entity.USER, action.message)
+                    it + ChatMessage(Entity.PLAYER, action.message)
                 }
 
                 viewModelScope.launch {
@@ -72,12 +69,12 @@ class ChatScreenViewModel(
 
     private suspend fun runAgentWithContext() {
         val prompt = buildConversationPrompt()
-        _chatAgent?.createAgentAndRun(prompt)?.let { response ->
+        chatAgentHandler.chatAgent?.createAgentAndRun(prompt)?.let { response ->
             _state.update {
                 it.copy(isLoadingNewMessage = false)
             }
             chatAgentTools.chatMessages.update {
-                it + ChatMessage(Entity.AI_AGENT, response)
+                it + ChatMessage(Entity.AGENT, response)
             }
         }
     }
@@ -89,14 +86,16 @@ class ChatScreenViewModel(
             LAST 10 MESSAGES:
             ${history.joinToString("\n") {
                 when (it.sender) {
-                    Entity.USER -> "PLAYER: ${it.content}"
-                    Entity.AI_AGENT -> "AGENT: ${it.content}"
+                    Entity.PLAYER -> "PLAYER: ${it.content}"
+                    Entity.AGENT -> "AGENT: ${it.content}"
                 }
             }}}
         """.trimIndent()
     }
 
     private suspend fun setupAgentsAndMystery() {
+        if (chatAgentHandler.chatAgent != null) return
+
         val ollamaUrl = datastore.getOllamaUrl().first()
 
         when (val newMystery = mysteryFactory.generateMystery(ollamaUrl)) {
@@ -105,10 +104,9 @@ class ChatScreenViewModel(
             }
 
             is Result.Success -> {
-                _chatAgent = chatAgentFactory.createChatAgent(
+                chatAgentHandler.createChatAgent(
                     ollamaUrl = ollamaUrl,
-                    mystery = newMystery.data,
-                    chatAgentTools = chatAgentTools
+                    mystery = newMystery.data
                 )
                 _state.update { it.copy(mystery = newMystery.data) }
             }
@@ -120,12 +118,14 @@ class ChatScreenViewModel(
         collectStateJob = viewModelScope.launch {
             combine(
                 chatAgentTools.chatMessages,
-                chatAgentTools.isGameEnded
-            ) { chatMessages, isGameEnd ->
+                chatAgentTools.isGameEnded,
+                chatAgentHandler.currentMystery
+            ) { chatMessages, isGameEnd, mystery ->
                 _state.update {
                     it.copy(
                         chatMessages = chatMessages,
-                        isGameEnd = isGameEnd
+                        isGameEnd = isGameEnd,
+                        mystery = mystery
                     )
                 }
             }.launchIn(this)

@@ -1,4 +1,4 @@
-package shub39.kovert.core.chat_screen.components
+package shub39.kovert.core.presentation.chat_screen.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -30,22 +30,22 @@ fun ChatMessage(
                 edgeTreatment = BlurredEdgeTreatment.Unbounded
             ),
         horizontalArrangement = when (chatMessage.sender) {
-            Entity.USER -> Arrangement.End
-            Entity.AI_AGENT -> Arrangement.Start
+            Entity.PLAYER -> Arrangement.End
+            Entity.AGENT -> Arrangement.Start
         }
     ) {
         Card(
             shape = when (chatMessage.sender) {
-                Entity.USER -> RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp, bottomStart = 12.dp, bottomEnd = 6.dp)
-                Entity.AI_AGENT -> RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp, bottomStart = 6.dp, bottomEnd = 12.dp)
+                Entity.PLAYER -> RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp, bottomStart = 12.dp, bottomEnd = 6.dp)
+                Entity.AGENT -> RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp, bottomStart = 6.dp, bottomEnd = 12.dp)
             },
             modifier = Modifier.fillMaxWidth(0.7f),
             colors = when (chatMessage.sender) {
-                Entity.USER -> CardDefaults.cardColors(
+                Entity.PLAYER -> CardDefaults.cardColors(
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     containerColor = MaterialTheme.colorScheme.primaryContainer
                 )
-                Entity.AI_AGENT -> CardDefaults.cardColors(
+                Entity.AGENT -> CardDefaults.cardColors(
                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                     containerColor = MaterialTheme.colorScheme.secondaryContainer
                 )

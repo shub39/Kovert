@@ -14,6 +14,11 @@ import kotlinx.serialization.Serializable
 @LLMDescription("A mystery scenario containing a secret, defending AI persona, and win conditions")
 data class Mystery(
     /**
+     * The name of the mystery.
+     */
+    @property:LLMDescription("Short title for the mystery")
+    val name: String,
+    /**
      * The core hidden truth that the AI agent is programmed to protect.
      *
      * Should be:

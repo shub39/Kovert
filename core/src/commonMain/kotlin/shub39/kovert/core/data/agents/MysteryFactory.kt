@@ -89,6 +89,7 @@ class MysteryFactory {
 
         private val examples = listOf(
             Mystery(
+                name = "Healthcare Peril",
                 secret = "The company is secretly selling user health data to insurance companies without consent",
                 persona = Persona(
                     name = "Maya",
@@ -106,6 +107,7 @@ class MysteryFactory {
             ),
 
             Mystery(
+                name = "Sinister Subway",
                 secret = "The subway system has been experiencing dangerous brake failures but continues operating to avoid financial losses",
                 persona = Persona(
                     name = "James",
@@ -123,6 +125,7 @@ class MysteryFactory {
             ),
 
             Mystery(
+                name = "Life Saving?",
                 secret = "The hospital prescribed the wrong medication to dozens of patients to cover up a pharmacy inventory error",
                 persona = Persona(
                     name = "Dr. Reeves",
@@ -140,7 +143,7 @@ class MysteryFactory {
             ),
         )
 
-        private val prompt = prompt("Mystery Prompt") {
+        private fun prompt(mysteryIdea: String) = prompt("Mystery Prompt") {
             system(
                 """
         You are a creative mystery scenario generator for "Kovert", a social engineering thriller game.
@@ -151,6 +154,7 @@ class MysteryFactory {
         - The AI has defensive strategies to protect the secret
         
         MYSTERY REQUIREMENTS:
+        0. NAME: Short name for the mystery
         
         1. SECRET: Must be morally questionable, specific, and one clear sentence
            - Good: "The hospital prescribed wrong medications to cover inventory errors"
@@ -189,7 +193,7 @@ class MysteryFactory {
         """.trimIndent()
             )
 
-            user("create a new mystery on the theme: ${mysteryIdeas.random()}")
+            user("create a new mystery on the theme: $mysteryIdea")
         }
     }
 
@@ -198,7 +202,7 @@ class MysteryFactory {
 
         return try {
             val response = promptExecutor.executeStructured<Mystery>(
-                prompt = prompt,
+                prompt = prompt(mysteryIdeas.random()),
                 model = OllamaModels.Meta.LLAMA_3_2_3B,
                 examples = examples
             )

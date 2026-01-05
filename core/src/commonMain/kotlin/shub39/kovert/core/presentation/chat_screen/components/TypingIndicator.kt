@@ -1,4 +1,4 @@
-package shub39.kovert.core.chat_screen.components
+package shub39.kovert.core.presentation.chat_screen.components
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.RepeatMode

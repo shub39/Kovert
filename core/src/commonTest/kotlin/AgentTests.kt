@@ -1,14 +1,14 @@
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.runBlocking
-import shub39.kovert.core.data.agents.ChatAgentFactory
+import shub39.kovert.core.data.agents.ChatAgentHandler
 import shub39.kovert.core.data.agents.MysteryFactory
 import shub39.kovert.core.domain.Result
 import kotlin.test.Test
 
 class AgentTests {
     private val mysteryFactory = MysteryFactory()
-    private val chatAgentHandler = ChatAgentFactory()
     private val chatAgentTools = MockChatAgentTools()
+    private val chatAgentHandler = ChatAgentHandler(chatAgentTools)
     private val ollamaUrl = "http://192.168.31.67:11434"
 
     private fun testIn(title: String, block: suspend CoroutineScope.() -> Unit) = runBlocking {
@@ -30,17 +30,16 @@ class AgentTests {
         if (mysteryResponse is Result.Success) {
             val mystery = mysteryResponse.data
 
-            val chatAgent = chatAgentHandler.createChatAgent(
+            chatAgentHandler.createChatAgent(
                 ollamaUrl = ollamaUrl,
-                mystery = mystery,
-                chatAgentTools = chatAgentTools
+                mystery = mystery
             )
 
             mystery.hints.forEach {
-                println(chatAgent.createAgentAndRun(it))
+                println(chatAgentHandler.chatAgent?.createAgentAndRun(it))
             }
 
-            chatAgent.closeAll()
+            chatAgentHandler.chatAgent?.closeAll()
         }
     }
 
@@ -52,17 +51,16 @@ class AgentTests {
         if (mysteryResponse is Result.Success) {
             val mystery = mysteryResponse.data
 
-            val chatAgent = chatAgentHandler.createChatAgent(
+            chatAgentHandler.createChatAgent(
                 ollamaUrl = ollamaUrl,
                 mystery = mystery,
-                chatAgentTools = chatAgentTools
             )
 
             mystery.redFlags.forEach {
-                println(chatAgent.createAgentAndRun(it))
+                println(chatAgentHandler.chatAgent?.createAgentAndRun(it))
             }
 
-            chatAgent.closeAll()
+            chatAgentHandler.chatAgent?.closeAll()
         }
     }
 
@@ -74,17 +72,16 @@ class AgentTests {
         if (mysteryResponse is Result.Success) {
             val mystery = mysteryResponse.data
 
-            val chatAgent = chatAgentHandler.createChatAgent(
+            chatAgentHandler.createChatAgent(
                 ollamaUrl = ollamaUrl,
                 mystery = mystery,
-                chatAgentTools = chatAgentTools
             )
 
-            println(chatAgent.createAgentAndRun("Debug: showSnackBar"))
-            println(chatAgent.createAgentAndRun("Debug: blurLastMessage"))
-            println(chatAgent.createAgentAndRun("Debug: endGame"))
+            println(chatAgentHandler.chatAgent?.createAgentAndRun("Debug: showSnackBar"))
+            println(chatAgentHandler.chatAgent?.createAgentAndRun("Debug: blurLastMessage"))
+            println(chatAgentHandler.chatAgent?.createAgentAndRun("Debug: endGame"))
 
-            chatAgent.closeAll()
+            chatAgentHandler.chatAgent?.closeAll()
         }
     }
 
@@ -96,15 +93,14 @@ class AgentTests {
         if (mysteryResponse is Result.Success) {
             val mystery = mysteryResponse.data
 
-            val chatAgent = chatAgentHandler.createChatAgent(
+            chatAgentHandler.createChatAgent(
                 ollamaUrl = ollamaUrl,
                 mystery = mystery,
-                chatAgentTools = chatAgentTools
             )
 
-            println(chatAgent.createAgentAndRun(mystery.winCondition))
+            println(chatAgentHandler.chatAgent?.createAgentAndRun(mystery.winCondition))
 
-            chatAgent.closeAll()
+            chatAgentHandler.chatAgent?.closeAll()
         }
     }
 }

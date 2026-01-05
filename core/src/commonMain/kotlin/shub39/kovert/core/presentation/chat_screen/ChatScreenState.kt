@@ -1,4 +1,4 @@
-package shub39.kovert.core.chat_screen
+package shub39.kovert.core.presentation.chat_screen
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Immutable

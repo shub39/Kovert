@@ -14,8 +14,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import shub39.kovert.core.data.network.OllamaApiChecker
 import shub39.kovert.core.domain.KovertDatastore
-import shub39.kovert.core.main_menu.MainMenuAction
-import shub39.kovert.core.main_menu.MainMenuState
+import shub39.kovert.core.presentation.main_menu.MainMenuAction
+import shub39.kovert.core.presentation.main_menu.MainMenuState
 
 class MainMenuViewModel(
     private val datastore: KovertDatastore

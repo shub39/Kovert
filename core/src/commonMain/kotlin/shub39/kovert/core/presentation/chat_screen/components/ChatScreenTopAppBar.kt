@@ -1,4 +1,4 @@
-package shub39.kovert.core.chat_screen.components
+package shub39.kovert.core.presentation.chat_screen.components
 
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -15,7 +15,7 @@ import kovert.core.generated.resources.arrow_back
 import kovert.core.generated.resources.generating_mystery
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import shub39.kovert.core.chat_screen.ChatScreenState
+import shub39.kovert.core.presentation.chat_screen.ChatScreenState
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable

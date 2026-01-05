@@ -1,4 +1,4 @@
-package shub39.kovert.core.chat_screen
+package shub39.kovert.core.presentation.chat_screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -37,10 +37,10 @@ import com.materialkolor.DynamicMaterialTheme
 import kovert.core.generated.resources.Res
 import kovert.core.generated.resources.hints
 import org.jetbrains.compose.resources.stringResource
-import shub39.kovert.core.chat_screen.components.ChatMessage
-import shub39.kovert.core.chat_screen.components.ChatScreenToolBar
-import shub39.kovert.core.chat_screen.components.ChatScreenTopAppBar
-import shub39.kovert.core.chat_screen.components.TypingIndicator
+import shub39.kovert.core.presentation.chat_screen.components.ChatMessage
+import shub39.kovert.core.presentation.chat_screen.components.ChatScreenToolBar
+import shub39.kovert.core.presentation.chat_screen.components.ChatScreenTopAppBar
+import shub39.kovert.core.presentation.chat_screen.components.TypingIndicator
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable

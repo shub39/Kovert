@@ -1,4 +1,4 @@
-package shub39.kovert.core.main_menu
+package shub39.kovert.core.presentation.main_menu
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement

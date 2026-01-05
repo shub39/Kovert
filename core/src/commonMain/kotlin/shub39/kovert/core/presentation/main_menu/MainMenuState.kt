@@ -1,4 +1,4 @@
-package shub39.kovert.core.main_menu
+package shub39.kovert.core.presentation.main_menu
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable

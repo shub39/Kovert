@@ -7,8 +7,8 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import org.koin.compose.koinInject
-import shub39.kovert.core.chat_screen.ChatScreen
-import shub39.kovert.core.main_menu.MainMenu
+import shub39.kovert.core.presentation.chat_screen.ChatScreen
+import shub39.kovert.core.presentation.main_menu.MainMenu
 import shub39.kovert.core.viewmodels.ChatScreenViewModel
 import shub39.kovert.core.viewmodels.MainMenuViewModel
 

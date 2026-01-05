@@ -1,4 +1,4 @@
-package shub39.kovert.core.chat_screen.components
+package shub39.kovert.core.presentation.chat_screen.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -26,8 +26,8 @@ import kovert.core.generated.resources.send
 import kovert.core.generated.resources.type_message
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import shub39.kovert.core.chat_screen.ChatScreenAction
-import shub39.kovert.core.chat_screen.ChatScreenState
+import shub39.kovert.core.presentation.chat_screen.ChatScreenAction
+import shub39.kovert.core.presentation.chat_screen.ChatScreenState
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
