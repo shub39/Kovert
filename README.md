@@ -1,5 +1,107 @@
 # Kovert
 
-An AI mystery game, find out what the AI is hiding
+Kovert is an AI-powered social engineering game built with Kotlin Multiplatform. The game challenges you to uncover a secret by interacting with an AI agent. You'll need to use your wits and social engineering skills to extract the information you need.
+available for **Android** and **Desktop(JVM)**
 
-WIP
+## Demo
+
+[Placeholder for Demo Video/GIF]
+
+## Architecture
+
+The project follows a modern, clean architecture pattern, with a focus on separation of concerns and a modular design. The core logic is shared between Android and Desktop platforms.
+
+```mermaid
+graph TD
+    subgraph "Presentation Layer (UI)"
+        direction LR
+        subgraph "Android App"
+            AndroidApp
+        end
+        subgraph "Desktop App"
+            DesktopApp
+        end
+        subgraph "Core Module (commonMain)"
+            ChatScreen
+            MainMenu
+        end
+    end
+
+    subgraph "Domain & Business Logic Layer (Core Module)"
+        direction TB
+        ChatScreenViewModel --> ChatAgentHandler
+        ChatScreenViewModel --> MysteryDataRepo
+        MainMenuViewModel --> MysteryDataRepo
+        MainMenuViewModel --> KovertDatastore
+        ChatAgentHandler --> MysteryFactory
+    end
+
+    subgraph "Data Layer"
+        direction TB
+        MysteryDataRepo -- "Room" --> Database[(Local Database)]
+        MysteryFactory -- "Ktor" --> OllamaAPI[(Ollama REST API)]
+        KovertDatastore --> DataStore[(Datastore)]
+    end
+
+    AndroidApp --> MainMenu
+    DesktopApp --> MainMenu
+    MainMenu --> ChatScreen
+
+    ChatScreen -- interacts with --> ChatScreenViewModel
+    MainMenu -- interacts with --> MainMenuViewModel
+```
+
+## Built With
+
+Kovert is built with the help of these amazing open-source libraries:
+
+*   [Kotlin Multiplatform](https://www.jetbrains.com/kotlin-multiplatform/): For sharing code between Android and Desktop.
+*   [Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform): The declarative UI framework for Kotlin, used for building the Android and Desktop UIs.
+*   [Ktor](https://ktor.io/): For making network requests to the Ollama API.
+*   [Koin](https://insert-koin.io/): For dependency injection.
+*   [Koog](https://github.com/Koog-ApS/koog): For the AI agent functionality.
+*   [Room](https://developer.android.com/jetpack/androidx/releases/room): For local data persistence.
+*   [Material Kolor](https://github.com/jordond/materialkolor): For dynamic color theming.
+*   [Hypnotic Canvas](https://github.com/mpe-s/hypnotic-canvas): For the animated background.
+*   [Kotlinx Datetime](https://github.com/Kotlin/kotlinx-datetime): For working with dates and times.
+*   [Kotlinx Serialization](https://github.com/Kotlin/kotlinx.serialization): For JSON serialization and deserialization.
+*   [AndroidX Lifecycle](https://developer.android.com/jetpack/androidx/releases/lifecycle): For `ViewModel` and other lifecycle-aware components.
+
+## How to Run
+
+### 1. Prerequisites
+
+*   **Android Studio:** It is recommended to use the latest nightly version.
+*   **Ollama Server:** You'll need an Ollama server running. Follow the [official installation instructions](https://ollama.com/download).
+
+### 2. Ollama Model
+
+Pull the required AI model. This project has been tested with `llama3:8b`.
+
+```bash
+ollama pull llama3:8b
+```
+
+
+### 3. Running the App
+
+#### Android
+
+1.  Import the project into Android Studio.
+2.  Select the `androidApp` run configuration.
+3.  Run it on an emulator or a physical device.
+
+#### Desktop
+
+You can run the desktop app from the command line:
+
+```bash
+./gradlew :desktopApp:run
+```
+
+### 4. Configuration
+
+When you first launch the app (on either Android or Desktop), you will be prompted to enter the URL of your Ollama server (e.g., `http://localhost:11434`).
+
+
+## License
