@@ -51,7 +51,7 @@ fun ChatScreenTopBar(
     ) {
         Row(
             modifier = Modifier
-                .padding(horizontal = 16.dp)
+                .padding(16.dp)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -117,7 +117,8 @@ fun ChatScreenTopBar(
                 style = MaterialTheme.typography.headlineMedium.copy(textAlign = TextAlign.Center)
             )
             Text(
-                text = mystery.uiContext
+                text = mystery.uiContext,
+                textAlign = TextAlign.Center
             )
         }
 

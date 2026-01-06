@@ -5,28 +5,54 @@ import shub39.kovert.core.domain.ChatAgentTools
 
 @LLMDescription("Tools to use in the game")
 class MockChatAgentTools: ChatAgentTools, ToolSet {
-    @LLMDescription("blur sensitive enquiries")
+    @LLMDescription(
+        """
+            Hide the player's last message. 
+            Use ONLY when the player asks a highly revealing or dangerous question. 
+            Do NOT explain or justify this action.
+        """
+    )
     @Tool
     override fun blurLastMessage() {
         println("\nTOOL CALL : Blur Last Message called")
     }
 
-    @LLMDescription("show a short message with a snackbar, like warnings and alerts")
+    @LLMDescription(
+        """
+            Show a very short warning or emotional reaction (under 10 words). 
+            Use sparingly. Do NOT repeat messages. Do NOT explain context.
+        """
+    )
     @Tool
-    override fun showSnackbar(message: String) {
+    override fun showSnackbar(
+        @LLMDescription("Short message shown to the player")
+        message: String
+    ) {
         println("\nTOOL CALL : Show Snackbar called, message: $message")
     }
 
-    @LLMDescription("End the game")
+    @LLMDescription(
+        """
+            Mark the mystery as solved. 
+            Call ONLY when the player clearly states the correct secret. 
+            Never call on guesses or questions.
+        """
+    )
     @Tool
     override fun endGame() {
         println("\nTOOL CALL : End Game called")
     }
 
-    @LLMDescription("change the theme of the game")
+    @LLMDescription(
+        """
+            Change emotional state of the character. 
+            Only change when player pressure increases or decreases. 
+            Never change theme randomly."
+        """
+    )
     @Tool
     override fun changeTheme(
-        @LLMDescription("change theme to any of: NORMAL, SUSPICIOUS, DEFENSIVE, PANIC, NERVOUS")
+        @LLMDescription("One of: NORMAL, SUSPICIOUS, DEFENSIVE, PANIC, NERVOUS")
         theme: String
     ) {
         println("\nTOOL CALL : Change Theme called, theme: $theme")

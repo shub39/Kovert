@@ -3,6 +3,7 @@ package shub39.kovert.core.presentation.chat_screen
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -43,7 +45,6 @@ import com.materialkolor.PaletteStyle
 import kovert.core.generated.resources.Res
 import kovert.core.generated.resources.hint
 import kovert.core.generated.resources.hints
-import kovert.core.generated.resources.save
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import shub39.kovert.core.presentation.chat_screen.components.ChatMessage
@@ -109,6 +110,20 @@ fun ChatScreen(
                     ) {
                         state.mystery?.let { mystery ->
                             item {
+                                OutlinedCard(
+                                    shape = MaterialTheme.shapes.medium
+                                ) {
+                                    Text(
+                                        text = mystery.description,
+                                        style = MaterialTheme.typography.titleMedium,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp)
+                                    )
+                                }
+                            }
+
+                            item {
                                 Card(
                                     shape = MaterialTheme.shapes.medium
                                 ) {
@@ -171,6 +186,23 @@ fun ChatScreen(
                                 Spacer(modifier = Modifier.height(12.dp))
                                 HorizontalDivider()
                             }
+                            FlowRow(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                            ) {
+                                state.mystery?.redFlags?.forEach { redFlag ->
+                                    AssistChip(
+                                        leadingIcon = {
+                                            Icon(
+                                                painter = painterResource(Res.drawable.hint),
+                                                contentDescription = null
+                                            )
+                                        },
+                                        onClick = {},
+                                        label = { Text(redFlag) }
+                                    )
+                                }
+                            }
                             LazyColumn(
                                 contentPadding = PaddingValues(16.dp),
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -181,6 +213,8 @@ fun ChatScreen(
                                         style = MaterialTheme.typography.bodyLarge
                                     )
                                 }
+
+                                item { Spacer(modifier = Modifier.height(32.dp)) }
                             }
                         }
                     }

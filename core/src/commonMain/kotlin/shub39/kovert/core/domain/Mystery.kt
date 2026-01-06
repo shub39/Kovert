@@ -18,6 +18,7 @@ data class Mystery(
      */
     @property:LLMDescription("Short title for the mystery")
     val name: String,
+
     /**
      * The core hidden truth that the AI agent is programmed to protect.
      *
@@ -34,6 +35,12 @@ data class Mystery(
      */
     @property:LLMDescription("One clear sentence describing the hidden truth the AI must protect at all costs")
     val secret: String,
+
+    /**
+     * A brief description of the mystery.
+     */
+    @property:LLMDescription("A brief description of the mystery, without giving away the secret")
+    val description: String,
 
     /**
      * The AI agent's identity and role in the scenario.

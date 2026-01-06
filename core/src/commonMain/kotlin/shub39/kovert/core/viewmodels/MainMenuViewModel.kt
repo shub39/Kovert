@@ -54,7 +54,7 @@ class MainMenuViewModel(
             is MainMenuAction.OnLoadMysteryData -> {
                 chatAgentHandler.createChatAgent(
                     ollamaUrl = _state.value.ollamaUrl,
-                    mysteryData = action.mysteryData
+                    mystery = action.mysteryData.mystery
                 )
                 chatAgentToolsImpl.currentMysteryData.update { action.mysteryData }
             }
@@ -95,6 +95,8 @@ class MainMenuViewModel(
             if (isValid) {
                 datastore.setOllamaUrl(url)
                 _state.update { it.copy(isValidUrl = true) }
+            } else {
+                _state.update { it.copy(isValidUrl = false) }
             }
         }
     }

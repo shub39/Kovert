@@ -86,16 +86,14 @@ class ChatScreenViewModel(
     private fun buildConversationPrompt(): String {
         val history = _state.value.chatMessages.takeLast(10)
         return """
-            MESSAGES COUNT: ${state.value.chatMessages.size}
-            LAST 10 MESSAGES:
-            ${
-            history.joinToString("\n") {
+            THEME: ${_state.value.chatOrb.desc} 
+            LAST MESSAGES:
+            ${history.joinToString("\n") {
                 when (it.sender) {
                     Entity.PLAYER -> "PLAYER: ${it.content}"
                     Entity.AGENT -> "AGENT: ${it.content}"
                 }
-            }
-        }}
+            }}}
         """.trimIndent()
     }
 
@@ -114,7 +112,7 @@ class ChatScreenViewModel(
             is Result.Success -> {
                 chatAgentHandler.createChatAgent(
                     ollamaUrl = ollamaUrl,
-                    mysteryData = newMysteryData.data
+                    mystery = newMysteryData.data.mystery
                 )
                 chatAgentTools.currentMysteryData.update { newMysteryData.data }
             }

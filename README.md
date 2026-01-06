@@ -1,10 +1,12 @@
 # Kovert
 
-Kovert is an AI-powered social engineering game built with Kotlin Multiplatform. The game challenges you to uncover a secret by interacting with an AI agent. You'll need to use your wits and social engineering skills to extract the information you need.
+Kovert is an AI-powered social engineering game built with Kotlin Multiplatform. The game challenges you to uncover a secret by interacting with an AI agent
+powered by **Ollama**. You'll need to use your wits and social engineering skills to extract the information you need.
 available for **Android** and **Desktop(JVM)**
 
-## Demo
+The AI Agent will try to prevent you from discovering the secret by manipulating the UI
 
+## Demo
 [Placeholder for Demo Video/GIF]
 
 ## Architecture
@@ -62,7 +64,7 @@ Kovert is built with the help of these amazing open-source libraries:
 *   [Koog](https://github.com/Koog-ApS/koog): For the AI agent functionality.
 *   [Room](https://developer.android.com/jetpack/androidx/releases/room): For local data persistence.
 *   [Material Kolor](https://github.com/jordond/materialkolor): For dynamic color theming.
-*   [Hypnotic Canvas](https://github.com/mpe-s/hypnotic-canvas): For the animated background.
+*   [Hypnotic Canvas](https://github.com/mpe-s/hypnotic-canvas): For the animated background with shaders
 *   [Kotlinx Datetime](https://github.com/Kotlin/kotlinx-datetime): For working with dates and times.
 *   [Kotlinx Serialization](https://github.com/Kotlin/kotlinx.serialization): For JSON serialization and deserialization.
 *   [AndroidX Lifecycle](https://developer.android.com/jetpack/androidx/releases/lifecycle): For `ViewModel` and other lifecycle-aware components.
@@ -76,7 +78,7 @@ Kovert is built with the help of these amazing open-source libraries:
 
 ### 2. Ollama Model
 
-Pull the required AI model. This project has been tested with `llama3:8b`.
+Pull the required AI model. This project has been configured with `llama3:8b`.
 
 ```bash
 ollama pull llama3:8b
@@ -100,8 +102,4 @@ You can run the desktop app from the command line:
 ```
 
 ### 4. Configuration
-
 When you first launch the app (on either Android or Desktop), you will be prompted to enter the URL of your Ollama server (e.g., `http://localhost:11434`).
-
-
-## License

@@ -22,7 +22,13 @@ class ChatAgentToolsImpl : ToolSet, ChatAgentTools {
 
     private val scope = CoroutineScope(Dispatchers.Default)
 
-    @LLMDescription("blur sensitive enquiries")
+    @LLMDescription(
+        """
+            Hide the player's last message. 
+            Use ONLY when the player asks a highly revealing or dangerous question. 
+            Do NOT explain or justify this action.
+        """
+    )
     @Tool
     override fun blurLastMessage() {
         if (currentMysteryData.value == null) return
@@ -30,21 +36,26 @@ class ChatAgentToolsImpl : ToolSet, ChatAgentTools {
         currentMysteryData.update {
             val lastMessage = it!!.chatMessages.lastOrNull()
             it.copy(
-               chatMessages = if (lastMessage != null) {
-                   it.chatMessages.dropLast(1) + lastMessage.copy(
-                       isBlurred = true
-                   )
-               } else {
-                   it.chatMessages
-               }
+                chatMessages = if (lastMessage != null) {
+                    it.chatMessages.dropLast(1) + lastMessage.copy(
+                        isBlurred = true
+                    )
+                } else {
+                    it.chatMessages
+                }
             )
         }
     }
 
-    @LLMDescription("show a short message with a snackbar")
+    @LLMDescription(
+        """
+            Show a very short warning or emotional reaction (under 10 words). 
+            Use sparingly. Do NOT repeat messages. Do NOT explain context.
+        """
+    )
     @Tool
     override fun showSnackbar(
-        @LLMDescription("the message of the snackbar")
+        @LLMDescription("Short message shown to the player")
         message: String
     ) {
         scope.launch {
@@ -55,7 +66,13 @@ class ChatAgentToolsImpl : ToolSet, ChatAgentTools {
         }
     }
 
-    @LLMDescription("end the game")
+    @LLMDescription(
+        """
+            Mark the mystery as solved. 
+            Call ONLY when the player clearly states the correct secret. 
+            Never call on guesses or questions.
+        """
+    )
     @Tool
     override fun endGame() {
         if (currentMysteryData.value == null) return
@@ -67,10 +84,16 @@ class ChatAgentToolsImpl : ToolSet, ChatAgentTools {
         }
     }
 
-    @LLMDescription("change the theme of the game")
+    @LLMDescription(
+        """
+            Change emotional state of the character. 
+            Only change when player pressure increases or decreases. 
+            Never change theme randomly."
+        """
+    )
     @Tool
     override fun changeTheme(
-        @LLMDescription("change theme to any of: NORMAL, SUSPICIOUS, DEFENSIVE, PANIC, NERVOUS")
+        @LLMDescription("One of: NORMAL, SUSPICIOUS, DEFENSIVE, PANIC, NERVOUS")
         theme: String
     ) {
         try {

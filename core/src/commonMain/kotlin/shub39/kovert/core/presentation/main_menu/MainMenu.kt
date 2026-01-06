@@ -40,6 +40,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.materialkolor.DynamicMaterialTheme
 import com.mikepenz.hypnoticcanvas.shaderBackground
@@ -202,11 +203,18 @@ fun MainMenu(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-                                    Text(
-                                        text = mysteryData.mystery.name,
-                                        style = MaterialTheme.typography.titleLarge,
-                                        modifier = Modifier.weight(1f)
-                                    )
+                                    Column( modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            text = mysteryData.mystery.name,
+                                            style = MaterialTheme.typography.titleLarge,
+                                            maxLines = 1
+                                        )
+                                        Text(
+                                            text = mysteryData.mystery.description,
+                                            overflow = TextOverflow.Ellipsis,
+                                            maxLines = 2
+                                        )
+                                    }
 
                                     if (mysteryData.isSolved) {
                                         Icon(

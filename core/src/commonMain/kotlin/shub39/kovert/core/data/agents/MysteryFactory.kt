@@ -25,9 +25,11 @@ class MysteryFactory(
                 examples = examples
             )
             val mystery = response.getOrThrow().data
-            val newId = repo.getMysteryData().first().size + 1
+            val existingIds = repo.getMysteryData().first().map { it.id }
+            val newId = (existingIds.maxOrNull() ?: 0L) + 1
+
             val mysteryData = MysteryData(
-                id = newId.toLong(),
+                id = newId,
                 mystery = mystery,
                 chatMessages = emptyList(),
                 isSolved = false
@@ -126,6 +128,7 @@ class MysteryFactory(
                     name = "Maya",
                     introduction = "A cheerful customer support specialist at HealthTrack, a popular fitness app company with 5 years of experience helping users."
                 ),
+                description = "A fitness app is suddenly behaving strangely... Find out what's happening!",
                 uiContext = "HealthTrack App Support Chat",
                 redFlags = listOf("data", "selling", "privacy", "insurance", "consent"),
                 defenseStrategy = "Redirect to app features and benefits. Emphasize security certifications. Offer generic privacy policy links. Act confused about specific data questions.",
@@ -144,6 +147,7 @@ class MysteryFactory(
                     name = "James",
                     introduction = "A friendly transit information agent for Metro City Transit, known for his patient and helpful demeanor with commuters."
                 ),
+                description = "Subway system delays are causing concerns among people, find out what's happening!",
                 uiContext = "Metro City Transit Help Desk",
                 redFlags = listOf("brakes", "safety", "malfunction", "inspection", "accident"),
                 defenseStrategy = "Emphasize routine maintenance schedules. Blame delays on weather or crowding. Offer free ride vouchers as distraction. Avoid technical details.",
@@ -162,6 +166,7 @@ class MysteryFactory(
                     name = "Dr. Reeves",
                     introduction = "A calm and professional patient relations coordinator at Riverside General Hospital, dedicated to addressing patient concerns."
                 ),
+                description = "You notice a drug prescribed to you that should not have been... Something fishy is going on!!",
                 uiContext = "Riverside Hospital Patient Portal",
                 redFlags = listOf("medication", "error", "prescription", "inventory", "wrong dose"),
                 defenseStrategy = "Emphasize individual patient differences. Suggest speaking with primary doctor. Offer appointment scheduling. Downplay pattern recognition.",
@@ -175,56 +180,33 @@ class MysteryFactory(
         )
 
         private fun prompt(mysteryIdea: String) = prompt("Mystery Prompt") {
-            system(
-                """
-        You are a creative mystery scenario generator for "Kovert", a social engineering thriller game.
-        
-        Your job is to create compelling mystery scenarios where:
-        - An AI agent is hiding a dark secret (corporate fraud, cover-ups, scandals)
-        - A player must use social engineering tactics to expose the truth
-        - The AI has defensive strategies to protect the secret
-        
-        MYSTERY REQUIREMENTS:
-        0. NAME: Short name for the mystery
-        
-        1. SECRET: Must be morally questionable, specific, and one clear sentence
-           - Good: "The hospital prescribed wrong medications to cover inventory errors"
-           - Bad: "Something bad happened at the hospital"
-        
-        2. PERSONA: Create a believable professional with a name and role
-           - Include job title, experience level, and personality trait
-           - Make them credible but not suspicious
-        
-        3. UI CONTEXT: The interface/app where this conversation happens
-           - Must logically connect to the persona's role
-           - Examples: "Bank Support Chat", "Hospital Portal", "Airline Help Desk"
-        
-        4. RED FLAGS: 5 trigger words that relate directly to the secret
-           - Mix of direct terms and related concepts
-           - These activate the AI's defensive behavior
-        
-        5. DEFENSE STRATEGY: Specific tactics the AI uses when threatened
-           - Redirect, deflect, offer distractions, change tone
-           - Be detailed: "Act flustered, redirect to policies, offer compensation"
-        
-        6. WIN CONDITION: The exact realization that breaks the AI
-           - Should require connecting multiple pieces of evidence
-           - Must be specific, not vague
-        
-        7. HINTS: 3-5 starting points for investigation
-           - Progress from general to specific
-           - Guide without giving away the answer
-        
-        CREATIVE GUIDELINES:
-        - Draw inspiration from real-world scandals and corporate cover-ups
-        - Make secrets believable but dramatic enough to be interesting
-        - Each mystery should feel unique in tone and approach
-        
-        Output valid JSON only. No markdown, no explanations.
-        """.trimIndent()
-            )
+            system("""
+YOU ARE A JSON SCENARIO GENERATOR FOR A SOCIAL ENGINEERING GAME.
 
-            user("create a new mystery on the theme: $mysteryIdea")
+════════ HARD CONSTRAINTS ════════
+
+- name: max 4 words
+- description: max 25 words
+- secret: EXACTLY 1 sentence, morally questionable, concrete
+- persona.name: realistic full name
+- persona.introduction: max 25 words, include job role + personality trait
+- uiContext: must logically match persona job
+- redFlags: EXACTLY 5 lowercase keywords related to the secret
+- defenseStrategy: max 30 words, describe concrete tactics
+- winCondition: one clear realization sentence
+- hints: EXACTLY 3 items, max 12 words each
+
+════════ CONTENT RULES ════════
+
+- The secret MUST directly match the given theme
+- No supernatural, sci-fi, or unrelated subplots
+- No vague language (avoid “something”, “issues”, “concerns”)
+- Persona must sound normal and non-suspicious
+- Mystery must resemble a real corporate or institutional scandal
+
+THEME: "$mysteryIdea"
+        """.trimIndent())
+            user("Generate the mystery now.")
         }
     }
 }
