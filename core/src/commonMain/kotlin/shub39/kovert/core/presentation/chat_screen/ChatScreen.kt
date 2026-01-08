@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -71,7 +70,7 @@ fun ChatScreen(
 
     DynamicMaterialTheme(
         seedColor = state.chatOrb.colors.first(),
-        style = if (state.mystery == null) PaletteStyle.Monochrome else PaletteStyle.Expressive,
+        style = if (state.mystery == null) PaletteStyle.Monochrome else PaletteStyle.Fidelity,
         isDark = true
     ) {
         Scaffold(
@@ -91,7 +90,7 @@ fun ChatScreen(
                     ChatScreenTopBar(
                         onNavigateUp = onNavigateUp,
                         state = state,
-                        onShowHints = { showHints = true }
+                        onShowHints = { showHints = true },
                     )
 
                     LazyColumn(
@@ -188,19 +187,15 @@ fun ChatScreen(
                             }
                             FlowRow(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                             ) {
                                 state.mystery?.redFlags?.forEach { redFlag ->
-                                    AssistChip(
-                                        leadingIcon = {
-                                            Icon(
-                                                painter = painterResource(Res.drawable.hint),
-                                                contentDescription = null
-                                            )
-                                        },
-                                        onClick = {},
-                                        label = { Text(redFlag) }
-                                    )
+                                    Card(
+                                        shape = MaterialTheme.shapes.extraLarge
+                                    ) {
+                                        Text(text = redFlag, modifier = Modifier.padding(8.dp))
+                                    }
                                 }
                             }
                             LazyColumn(

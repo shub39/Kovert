@@ -112,14 +112,21 @@ fun ChatScreenTopBar(
         Spacer(modifier = Modifier.height(16.dp))
 
         state.mystery?.let { mystery ->
-            Text(
-                text = mystery.persona.name,
-                style = MaterialTheme.typography.headlineMedium.copy(textAlign = TextAlign.Center)
-            )
-            Text(
-                text = mystery.uiContext,
-                textAlign = TextAlign.Center
-            )
+            Column(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = mystery.persona.name,
+                    style = MaterialTheme.typography.headlineMedium.copy(textAlign = TextAlign.Center),
+                    maxLines = 1
+                )
+                Text(
+                    text = mystery.uiContext,
+                    textAlign = TextAlign.Center,
+                    maxLines = 2
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))

@@ -31,6 +31,7 @@ class ChatAgentToolsImpl : ToolSet, ChatAgentTools {
     )
     @Tool
     override fun blurLastMessage() {
+        println("TOOL CALLED: blurLastMessage")
         if (currentMysteryData.value == null) return
 
         currentMysteryData.update {
@@ -58,6 +59,7 @@ class ChatAgentToolsImpl : ToolSet, ChatAgentTools {
         @LLMDescription("Short message shown to the player")
         message: String
     ) {
+        println("TOOL CALLED: showSnackbar, message: $message")
         scope.launch {
             snackBarHostState.showSnackbar(
                 message = message,
@@ -75,6 +77,7 @@ class ChatAgentToolsImpl : ToolSet, ChatAgentTools {
     )
     @Tool
     override fun endGame() {
+        println("TOOL CALLED: endGame")
         if (currentMysteryData.value == null) return
 
         currentMysteryData.update {
@@ -96,6 +99,7 @@ class ChatAgentToolsImpl : ToolSet, ChatAgentTools {
         @LLMDescription("One of: NORMAL, SUSPICIOUS, DEFENSIVE, PANIC, NERVOUS")
         theme: String
     ) {
+        println("TOOL CALLED: changeTheme, theme: $theme")
         try {
             val orb = ChatOrb.entries.find { it.desc == theme } ?: throw Exception("Invalid theme")
             chatOrb.update { orb }

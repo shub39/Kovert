@@ -53,7 +53,7 @@ fun ChatMessage(
         ) {
             Text(
                 text = chatMessage.content,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(8.dp)
             )
         }

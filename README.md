@@ -4,10 +4,15 @@ Kovert is an AI-powered social engineering game built with Kotlin Multiplatform.
 powered by **Ollama**. You'll need to use your wits and social engineering skills to extract the information you need.
 available for **Android** and **Desktop(JVM)**
 
-The AI Agent will try to prevent you from discovering the secret by manipulating the UI
-
 ## Demo
 [Placeholder for Demo Video/GIF]
+
+The AI Agent will try to prevent you from discovering the secret by manipulating the UI through tool calls
+it can
+
+- Change the theme of the chat depending on how it feels
+- Show a snackBar with it's thought process
+- Blur sensitive questions asked by the player
 
 ## Architecture
 
@@ -63,6 +68,7 @@ Kovert is built with the help of these amazing open-source libraries:
 *   [Koin](https://insert-koin.io/): For dependency injection.
 *   [Koog](https://github.com/Koog-ApS/koog): For the AI agent functionality.
 *   [Room](https://developer.android.com/jetpack/androidx/releases/room): For local data persistence.
+*   [Navigation 3](): For navigation between screens.
 *   [Material Kolor](https://github.com/jordond/materialkolor): For dynamic color theming.
 *   [Hypnotic Canvas](https://github.com/mpe-s/hypnotic-canvas): For the animated background with shaders
 *   [Kotlinx Datetime](https://github.com/Kotlin/kotlinx-datetime): For working with dates and times.
@@ -78,10 +84,10 @@ Kovert is built with the help of these amazing open-source libraries:
 
 ### 2. Ollama Model
 
-Pull the required AI model. This project has been configured with `llama3:8b`.
+Pull the required AI model. This project has been configured with `llama3:3b`.
 
 ```bash
-ollama pull llama3:8b
+ollama pull llama3:3b
 ```
 
 
