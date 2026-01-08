@@ -5,7 +5,7 @@ powered by **Ollama**. You'll need to use your wits and social engineering skill
 available for **Android** and **Desktop(JVM)**
 
 ## Demo
-[Placeholder for Demo Video/GIF]
+https://github.com/user-attachments/assets/3d6aae06-54ee-4753-97b6-12e1b0e62ce0
 
 The AI Agent will try to prevent you from discovering the secret by manipulating the UI through tool calls
 it can
