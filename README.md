@@ -20,42 +20,45 @@ The project follows a modern, clean architecture pattern, with a focus on separa
 
 ```mermaid
 graph TD
-    subgraph "Presentation Layer (UI)"
-        direction LR
+    subgraph "Platform Specific Modules"
         subgraph "Android App"
             AndroidApp
         end
         subgraph "Desktop App"
             DesktopApp
         end
-        subgraph "Core Module (commonMain)"
+    end
+
+    subgraph "Presentation Layer"
+        subgraph "Core Module"
+            App
             ChatScreen
             MainMenu
         end
     end
 
-    subgraph "Domain & Business Logic Layer (Core Module)"
-        direction TB
+    subgraph "Domain & Business Logic Layer"
         ChatScreenViewModel --> ChatAgentHandler
-        ChatScreenViewModel --> MysteryDataRepo
-        MainMenuViewModel --> MysteryDataRepo
-        MainMenuViewModel --> KovertDatastore
-        ChatAgentHandler --> MysteryFactory
+        MainMenuViewModel --> ChatAgentHandler
+        MainMenuViewModel <--> MysteryDataRepo
+        ChatScreenViewModel --> MysteryFactory
     end
 
     subgraph "Data Layer"
-        direction TB
-        MysteryDataRepo -- "Room" --> Database[(Local Database)]
-        MysteryFactory -- "Ktor" --> OllamaAPI[(Ollama REST API)]
-        KovertDatastore --> DataStore[(Datastore)]
+        MysteryDataDao <--> MysteryDataRepo
+        MainMenuViewModel <-- "Saved Ollama Url" --> KovertDatastore
+        MysteryDataDao <-- "Room" --> Database[(Local Database)]
+        MysteryFactory <-- "Koog" --> OllamaAPI[(Ollama REST API)]
+        KovertDatastore <-- "DataStore" --> DataStore[(Datastore)]
     end
 
-    AndroidApp --> MainMenu
-    DesktopApp --> MainMenu
-    MainMenu --> ChatScreen
+    ChatScreen-->App
+    MainMenu-->App
+    App-->AndroidApp
+    App-->DesktopApp
 
-    ChatScreen -- interacts with --> ChatScreenViewModel
-    MainMenu -- interacts with --> MainMenuViewModel
+    ChatScreen <-- interacts with --> ChatScreenViewModel
+    MainMenu <-- interacts with --> MainMenuViewModel
 ```
 
 ## Built With
