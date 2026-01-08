@@ -76,6 +76,7 @@ Kovert is built with the help of these amazing open-source libraries:
 *   [Hypnotic Canvas](https://github.com/mpe-s/hypnotic-canvas): For the animated background with shaders
 *   [Kotlinx Datetime](https://github.com/Kotlin/kotlinx-datetime): For working with dates and times.
 *   [Kotlinx Serialization](https://github.com/Kotlin/kotlinx.serialization): For JSON serialization and deserialization.
+*   [Hot Reload](https://github.com/JetBrains/compose-hot-reload): For hot-reloading the app UI during development
 *   [AndroidX Lifecycle](https://developer.android.com/jetpack/androidx/releases/lifecycle): For `ViewModel` and other lifecycle-aware components.
 
 ## How to Run
